@@ -5,7 +5,7 @@
                 <ion-buttons slot="start">
                     <ion-menu-button />
                 </ion-buttons>
-                <ion-tittle>Menu</ion-tittle>
+                <ion-title>Perfil</ion-title>
             </ion-toolbar>
         </ion-header>
         <ion-content>
@@ -14,5 +14,6 @@
     </ion-page>
 </template>
 <script setup lang="ts">
-import { IonButtons, IonMenuButton } from '@ionic/vue';
+import {IonPage, IonContent, IonButtons, IonHeader, IonToolbar, IonMenuButton, IonTitle,} from '@ionic/vue';
+
 </script>

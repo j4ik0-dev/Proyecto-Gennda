@@ -4,7 +4,7 @@
             <ion-toolbar>
                 <ion-buttons slot="start">
                     <ion-menu-button/>
-                    <ion-tittle>Pagina 2</ion-tittle>
+                    <ion-title>Pagina 2</ion-title>
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>

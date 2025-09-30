@@ -24,5 +24,5 @@
 </template>
 
 <script setup lang="ts">
-import {IonMenu, IonItem, IonRouterOutlet } from '@ionic/vue';
+import {IonApp, IonContent, IonList, IonHeader, IonToolbar, IonTitle, IonMenu, IonItem, IonRouterOutlet } from '@ionic/vue';
 </script>
