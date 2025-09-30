@@ -11,6 +11,11 @@
         <ion-content>
             <h1>Página de prueba</h1>
         </ion-content>
+        <ion-footer>
+            <ion-toolbar>
+                <p>Pie de página</p>
+            </ion-toolbar>
+        </ion-footer>
     </ion-page>
 </template>
 <script setup lang="ts">

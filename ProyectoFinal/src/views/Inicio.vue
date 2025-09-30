@@ -11,9 +11,14 @@
     <ion-content>
       <h1>Pagina de inicio</h1>
     </ion-content>
+    <ion-footer>
+      <ion-toolbar>
+        <p>Pie de página</p>
+      </ion-toolbar>
+    </ion-footer>
   </ion-page>
 </template>
 <script setup lang="ts">
-import {IonPage, IonContent, IonButtons, IonHeader, IonToolbar, IonMenuButton, IonTitle,} from '@ionic/vue';
+import {IonPage, IonFooter, IonContent, IonButtons, IonHeader, IonToolbar, IonMenuButton, IonTitle,} from '@ionic/vue';
 
 </script>
