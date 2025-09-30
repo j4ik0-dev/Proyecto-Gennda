@@ -1,0 +1,18 @@
+<template>
+    <ion-page>
+        <ion-header>
+            <ion-toolbar>
+                <ion-buttons slot="start">
+                    <ion-menu-button/>
+                    <ion-tittle>Pagina 2</ion-tittle>
+                </ion-buttons>
+            </ion-toolbar>
+        </ion-header>
+        <ion-content>
+            <h1>Pagina 2</h1>
+        </ion-content>
+    </ion-page>
+</template>
+<script setup lang="ts">
+import { IonPage, IonHeader, IonToolbar, IonButtons, IonMenuButton, IonTitle, IonContent } from '@ionic/vue';
+</script>
