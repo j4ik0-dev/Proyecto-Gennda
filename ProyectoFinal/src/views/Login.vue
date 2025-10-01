@@ -7,7 +7,7 @@
                 <div class="login-box">
                     <h1>Iniciar Sesion</h1>
                     <div class="sub-logo">
-                        <img class="logo" src="/logo.png" alt="logo" />
+                        <img class="logo" src="/logo2.png" alt="logo" />
                     </div>
                     <ion-item>
                         <ion-label position="floating">Correo</ion-label>
@@ -68,7 +68,7 @@ import { IonPage, IonFooter, IonContent, IonLabel, IonInput, IonItem, IonButton,
 }
 
 .logo {
-    width: 100px;
+    width: 150px;
     height: 100px;
     margin-bottom: 20px;
     margin-top: 20px;
