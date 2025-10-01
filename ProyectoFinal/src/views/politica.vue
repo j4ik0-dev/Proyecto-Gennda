@@ -7,7 +7,6 @@
                 </ion-buttons>
                 <ion-title>Términos y Políticas</ion-title>
                 <ion-buttons slot="end">
-                    <ion-button router-link="/login">Iniciar Sesión</ion-button>
                 </ion-buttons>
             </ion-toolbar>
         </ion-header>
