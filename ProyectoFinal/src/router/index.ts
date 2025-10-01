@@ -5,12 +5,12 @@ import HistorialFinanzas from '../views/HistorialFinanzas.vue'
 import Login from '../views/Login.vue'
 import Pagina2 from '../views/Pagina2.vue'
 import Pagina3 from '../views/Pagina3.vue'
-
-
+import Perfil from '@/views/Perfil.vue';
+import AyudaSoporte from '@/views/AyudaSoporte.vue';
 
 const routes: Array<RouteRecordRaw> = [
     {
-        path: '/inicio',
+        path: '/',
         name: 'Inicio',
         component: Inicio
     },
@@ -34,7 +34,17 @@ const routes: Array<RouteRecordRaw> = [
         name: 'Pagina3',
         component: Pagina3
     },
-]
+    {
+        path: '/perfil',
+        name: 'Perfil',
+        component: Perfil
+    },
+    {
+        path: '/ayuda-soporte',
+        name: 'AyudaSoporte',
+        component: AyudaSoporte
+    }   
+    ]
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL), routes
 })
