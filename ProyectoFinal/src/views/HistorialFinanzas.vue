@@ -19,7 +19,7 @@
             <div class="avatar" :style="{ '--bg-color': item.color }"></div>
           </ion-avatar>
           <ion-label>
-            <h2>{{ item.fecha }}</h2>
+            <h1>{{ item.fecha }}</h1>
             <p><strong>{{ item.usuario }}</strong> {{ item.detalle }}</p>
             <p class="descripcion">{{ item.descripción }}</p>
           </ion-label>
@@ -96,7 +96,7 @@ const historial = ref<HistorialItem[]>([
   margin-top: 4px;
 }
 
-ion-label h2 {
+ion-label h1 {
   font-size: 0.95rem;
   margin-bottom: 4px;
 }
