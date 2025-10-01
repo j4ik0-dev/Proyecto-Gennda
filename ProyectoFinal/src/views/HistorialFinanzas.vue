@@ -8,7 +8,7 @@
                 <ion-title>Historial de finanzas</ion-title>
             </ion-toolbar>
         </ion-header>
-       <ion-content :fullscreen="true">
+      <ion-content :fullscreen="true" id="content">
       <ion-list>
         <ion-item
           v-for="(item, index) in historial"
@@ -26,6 +26,11 @@
         </ion-item>
       </ion-list>
     </ion-content>
+    <ion-footer>
+      <ion-toolbar>
+        <p>Pie de página</p>
+      </ion-toolbar>
+    </ion-footer>
   </ion-page>
 </template>
 
@@ -40,7 +45,10 @@ import {
   IonList,
   IonItem,
   IonAvatar,
-  IonLabel
+  IonLabel,
+  IonFooter,
+  IonButtons,
+  IonMenuButton
 } from '@ionic/vue'
 
 interface HistorialItem {
@@ -83,7 +91,7 @@ const historial = ref<HistorialItem[]>([
 }
 
 .descripcion {
-  color: var(--ion-color-medium, #999);
+  color: var(--ion-color-medium, #030303);
   font-size: 0.875rem;
   margin-top: 4px;
 }
