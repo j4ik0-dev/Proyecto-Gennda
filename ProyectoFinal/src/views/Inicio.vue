@@ -4,9 +4,7 @@
     <ion-header>
       <ion-toolbar>
         <ion-title>Gennda</ion-title>
-        <ion-buttons id="iniciar-sesion" slot="end">
-          <ion-button>Iniciar Sesion</ion-button>
-        </ion-buttons>
+          <ion-button id="boton-sesion" slot="end">Iniciar Sesion</ion-button>
       </ion-toolbar>
     </ion-header>
     <ion-content>
@@ -16,7 +14,7 @@
             <div cass="sub-logo">
               <img class="logo-inicio" src="/logo.png" alt="logo"></img>
             </div>
-            <h1>Bienvenido a gennda</h1>
+            <h1>Bienvenido a Gennda</h1>
             <p>La mejor solución para tu organizacion</p>
             <ion-button id="boton-registro" size="default">Registrase</ion-button>
           </div>
@@ -56,10 +54,9 @@ import { IonPage, IonButton, IonFooter, IonContent, IonButtons, IonHeader, IonTo
   padding: 40px;
   border-radius: 20px;
   text-align: center;
-  background: linear-gradient(to bottom right, #b488e9, #eb94d7, #d181ef);
+  background: linear-gradient(to bottom right, #c2aadf, #e8bcde, #dca8ef);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-  width: 100rem;
-  height: 85%;
+  width: 80%;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -84,16 +81,14 @@ import { IonPage, IonButton, IonFooter, IonContent, IonButtons, IonHeader, IonTo
   align-items: center;
   margin-bottom: 20px;
 }
-#iniciar-sesion{
-  width: 150px;
-  margin-right: 10px;
-  text-align: center;
-}
 #boton-registro{
   width: 150px;
   align-self: center;
   margin-top: 20px;
   color: white;
-
+}
+#boton-sesion{
+  margin-right: 10px;
+  color: white;
 }
 </style>

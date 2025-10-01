@@ -8,7 +8,7 @@ ion-toolbar {
 }
 
 ion-content {
-    --background: linear-gradient(to bottom right, #ffffff, #87c6d1, #4babbc, #8bd3e0);
+    --background: linear-gradient(to bottom right, #ffffff, #87c6d1, #4babbc, #a5dae3);
     --color: #000000;
 }
 
