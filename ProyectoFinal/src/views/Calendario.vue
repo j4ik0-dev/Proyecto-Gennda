@@ -2,6 +2,9 @@
   <ion-page>
     <ion-header>
       <ion-toolbar color="light">
+        <ion-buttons slot="start">
+          <ion-menu-button />
+        </ion-buttons>
         <ion-title>Calendario</ion-title>
         <ion-buttons slot="end">
           <ion-searchbar 
@@ -169,10 +172,16 @@
         </div>
       </div>
     </ion-content>
+    
+    <ion-footer>
+      <ion-toolbar>
+        <p>© 2025 Gennda - Todos los derechos reservados</p>
+      </ion-toolbar>
+    </ion-footer>
   </ion-page>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue';
 import {
   IonPage,
@@ -193,7 +202,9 @@ import {
   IonCol,
   IonChip,
   IonLabel,
-  IonText
+  IonText,
+  IonMenuButton,
+  IonFooter
 } from '@ionic/vue';
 import {
   calendarOutline,
@@ -203,19 +214,44 @@ import {
   peopleOutline
 } from 'ionicons/icons';
 
+interface Event {
+  title: string;
+  color: string;
+  textColor?: string;
+}
+
+interface DayData {
+  day: string;
+  events: Event[];
+}
+
+interface Category {
+  name: string;
+  color: string;
+}
+
+interface UpcomingEvent {
+  date: string;
+  time: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  color: string;
+}
+
 const currentMonth = ref('JUNIO');
 const currentBalance = ref('$122.50');
 
 const weekDays = ['LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO', 'DOMINGO'];
 
-const eventCategories = [
+const eventCategories: Category[] = [
   { name: 'Reuniones', color: '#C4B5FD' },
   { name: 'Proyecto personal', color: '#A78BFA' },
   { name: 'Familiar', color: '#D1D5DB' },
   { name: 'Mandados', color: '#1F2937' }
 ];
 
-const upcomingEvents = [
+const upcomingEvents: UpcomingEvent[] = [
   {
     date: '30 Junio 2024',
     time: '6:35 am',
@@ -242,7 +278,7 @@ const upcomingEvents = [
   }
 ];
 
-const calendarDays = [
+const calendarDays: DayData[] = [
   { day: '', events: [] },
   { day: '', events: [] },
   { day: '', events: [] },
@@ -287,9 +323,8 @@ const calendarDays = [
   ]}
 ];
 
-// Dividir los días en semanas (7 días por semana)
 const weeksArray = computed(() => {
-  const weeks = [];
+  const weeks: DayData[][] = [];
   for (let i = 0; i < calendarDays.length; i += 7) {
     weeks.push(calendarDays.slice(i, i + 7));
   }
@@ -379,15 +414,16 @@ const weeksArray = computed(() => {
 .calendar-content {
   background: white;
   border-radius: 16px;
-  padding: 12px;
+  padding: 16px;
 }
 
 .calendar-grid {
   padding: 0;
+  width: 100%;
 }
 
 .week-days-row {
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .week-day-col {
@@ -396,17 +432,18 @@ const weeksArray = computed(() => {
 }
 
 .week-day-col small {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
 .days-row {
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 }
 
 .day-col {
-  min-height: 90px;
-  padding: 4px;
+  min-height: 120px;
+  padding: 8px;
   border-radius: 8px;
 }
 
@@ -422,18 +459,22 @@ const weeksArray = computed(() => {
 .day-highlight {
   border: 2px solid #A78BFA !important;
   box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.3);
+  background: #F3E8FF !important;
 }
 
 .day-content {
   height: 100%;
   display: flex;
   flex-direction: column;
+  gap: 4px;
 }
 
 .day-number {
-  font-size: 13px;
-  margin-bottom: 4px;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 6px;
   display: block;
+  color: #1F2937;
 }
 
 .events-list {
@@ -444,17 +485,18 @@ const weeksArray = computed(() => {
 
 .event-chip {
   height: auto;
-  min-height: 22px;
+  min-height: 24px;
   margin: 0;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
 }
 
 .event-label {
-  font-size: 8px !important;
-  line-height: 1.2;
+  font-size: 10px !important;
+  line-height: 1.3;
   margin: 0;
   white-space: normal;
+  font-weight: 500;
 }
 
 .events-sidebar {
@@ -560,5 +602,15 @@ ion-searchbar {
 
 ion-chip {
   --background: #E5E7EB;
+}
+
+ion-footer ion-toolbar {
+  text-align: center;
+}
+
+ion-footer p {
+  margin: 10px 0;
+  font-size: 0.875rem;
+  color: #666;
 }
 </style>
