@@ -1,7 +1,7 @@
 <template>
   <ion-page>
     <ion-header>
-      <ion-toolbar color="light">
+      <ion-toolbar>
         <ion-buttons slot="start">
           <ion-menu-button />
         </ion-buttons>
@@ -612,5 +612,16 @@ ion-footer p {
   margin: 10px 0;
   font-size: 0.875rem;
   color: #666;
+}
+.card-content-md {
+    -webkit-padding-start: 16px;
+    padding-inline-start: 16px;
+    -webkit-padding-end: 16px;
+    padding-inline-end: 16px;
+    padding-top: 13px;
+    padding-bottom: 13px;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    background-color: white;
 }
 </style>

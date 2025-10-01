@@ -8,15 +8,12 @@
       </ion-header>
       <ion-content>
         <ion-list>
-          <ion-item router-link="/inicio">Inicio</ion-item>
+          <ion-item router-link="/">Inicio</ion-item>
           <ion-item router-link="/historial">Historial</ion-item>
           <ion-item router-link="/login">Iniciar sesion</ion-item>
           <ion-item router-link="/calendario">Calendario</ion-item>
           <ion-item router-link="/historial">Historial Finanzas</ion-item>
           <ion-item router-link="/politica">politica</ion-item>
-          <ion-item router-link="/pagina1">Calendario</ion-item>
-          <ion-item router-link="/pagina2">Pagina 2</ion-item>
-          <ion-item router-link="/pagina3">Pagina 3</ion-item>
         </ion-list>
       </ion-content>
     </ion-menu>
