@@ -3,10 +3,8 @@ import { RouteRecordRaw } from 'vue-router';
 import Inicio from '../views/Inicio.vue'
 import HistorialFinanzas from '../views/HistorialFinanzas.vue'
 import Login from '../views/Login.vue'
-import Pagina2 from '../views/Pagina2.vue'
 import Pagina3 from '../views/Pagina3.vue'
-
-
+import Calendario from '../views/Calendario.vue'
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -25,9 +23,9 @@ const routes: Array<RouteRecordRaw> = [
         component: Login
     },
     {
-        path: '/pagina2',
-        name: 'Pagina2',
-        component: Pagina2
+        path: '/calendario',
+        name: 'Calendario',
+        component: Calendario
     },
     {
         path: '/pagina3',
