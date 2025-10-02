@@ -8,7 +8,7 @@
         <ion-title>Calendario</ion-title>
         <ion-buttons slot="end">
           <ion-searchbar 
-            placeholder="Calendario Mayo" 
+            placeholder="Calendario Junio" 
             :debounce="300"
             style="max-width: 250px;"
           ></ion-searchbar>
@@ -539,6 +539,7 @@ const weeksArray = computed(() => {
 
 .event-card ion-card-content {
   padding: 12px;
+  
 }
 
 .event-card-header {
@@ -622,6 +623,5 @@ ion-footer p {
     padding-bottom: 13px;
     font-size: 0.875rem;
     line-height: 1.5;
-    background-color: white;
 }
 </style>
