@@ -263,12 +263,33 @@ const historyItems = [
   --background: linear-gradient(135deg, #A5F3FC 0%, #67E8F9 100%);
 }
 
+/* ...existing code... */
 .content-wrapper {
   display: flex;
   height: 100%;
   padding: 20px;
   gap: 20px;
+  flex-wrap: wrap; /* Allow items to wrap to the next line */
 }
+
+/* Add media queries for responsiveness */
+@media (max-width: 768px) {
+  .content-wrapper {
+    flex-direction: column; /* Stack items vertically on smaller screens */
+  }
+}
+
+.main-finance-area {
+  flex: 1; /* Allow the main area to grow and take available space */
+  min-width: 300px; /* Ensure it doesn't shrink too much */
+  overflow-y: auto;
+}
+
+.history-sidebar {
+  width: 340px; /* Keep the sidebar width */
+  min-width: 200px; /* Ensure it doesn't shrink too much */
+}
+/* ...existing code... */
 
 .main-finance-area {
   flex: 1;
@@ -448,13 +469,31 @@ const historyItems = [
   margin: 0;
 }
 
+/* ...existing code... */
 .history-list {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin-bottom: 20px;
+  overflow-x: auto; /* Enable horizontal scrolling for smaller screens */
 }
+
+/* Add media queries for responsiveness */
+@media (max-width: 768px) {
+  .history-list {
+    flex-direction: row; /* Display items in a row */
+    overflow-x: auto; /* Enable horizontal scrolling */
+    white-space: nowrap; /* Prevent items from wrapping */
+  }
+
+  .history-card {
+    flex: 0 0 auto; /* Prevent cards from shrinking */
+    width: 80%; /* Adjust card width as needed */
+    max-width: 200px; /* Set a maximum width */
+  }
+}
+/* ...existing code... */
 
 .history-card {
   border-radius: 12px;
