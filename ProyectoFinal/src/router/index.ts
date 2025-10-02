@@ -7,6 +7,7 @@ import Login from '../views/Login.vue'
 import politica from '@/views/politica.vue'
 import AyudaSoporte from '../views/AyudaSoporte.vue'
 import Calendario from '../views/Calendario.vue'
+import Finanzas from '../views/Finanzas.vue';
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -42,6 +43,12 @@ const routes: Array<RouteRecordRaw> = [
         path: '/ayuda-soporte',
         name: 'AyudaSoporte',
         component: AyudaSoporte
+    },
+    {
+        path: '/finanzas',
+        name: 'Finanzas',
+        component: Finanzas
+
     }
 ]
 

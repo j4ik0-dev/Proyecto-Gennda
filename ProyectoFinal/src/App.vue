@@ -11,6 +11,7 @@
           <ion-item router-link="/">Inicio</ion-item>
           <ion-item router-link="/login">Iniciar sesion</ion-item>
           <ion-item router-link="/calendario">Calendario</ion-item>
+          <ion-item router-link="/finanzas">Finanzas</ion-item>
           <ion-item router-link="/historial">Historial Finanzas</ion-item>
           <ion-item router-link="/politica">Politica</ion-item>
           <ion-item router-link="/ayuda-soporte">Ayuda y Soporte</ion-item>
