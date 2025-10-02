@@ -501,7 +501,7 @@ const weeksArray = computed(() => {
 
 .events-sidebar {
   width: 320px;
-  background: linear-gradient(135deg, #67E8F9 0%, #22D3EE 100%);
+  background: linear-gradient(135deg, #4babb8 0%, #22D3EE 100%);
   border-radius: 16px;
   padding: 20px;
   overflow-y: auto;
