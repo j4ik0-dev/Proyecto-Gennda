@@ -7,7 +7,7 @@
                 <div class="login-box">
                     <h1>Iniciar Sesion</h1>
                     <div class="sub-logo">
-                        <img class="logo" src="/logo.png" alt="logo" />
+                        <img class="logo" src="/logo2.png" alt="logo" />
                     </div>
                     <ion-item>
                         <ion-label position="floating">Correo</ion-label>
@@ -19,8 +19,8 @@
                     </ion-item>
                     <div class="boton-login">
                         <ion-button expand="block" color="primary">
-                        Iniciar Sesión
-                    </ion-button>
+                            Iniciar Sesión
+                        </ion-button>
                     </div>
                     <p class="register-text">
                         ¿No tienes cuenta?
@@ -31,13 +31,13 @@
         </ion-content>
         <ion-footer>
             <ion-toolbar>
-                <p>Pie de página</p>
+                <p>© 2025 Gennda - Todos los derechos reservados</p>
             </ion-toolbar>
         </ion-footer>
     </ion-page>
 </template>
 <script setup lang="ts">
-import { IonPage, IonContent, IonLabel, IonInput, IonItem, IonButton, IonHeader, IonToolbar, IonMenuButton, IonTitle, } from '@ionic/vue';
+import { IonPage, IonFooter, IonContent, IonLabel, IonInput, IonItem, IonButton, IonHeader, IonToolbar, IonMenuButton, IonTitle, } from '@ionic/vue';
 
 </script>
 <style scoped>
@@ -68,7 +68,7 @@ import { IonPage, IonContent, IonLabel, IonInput, IonItem, IonButton, IonHeader,
 }
 
 .logo {
-    width: 100px;
+    width: 150px;
     height: 100px;
     margin-bottom: 20px;
     margin-top: 20px;
@@ -103,8 +103,19 @@ import { IonPage, IonContent, IonLabel, IonInput, IonItem, IonButton, IonHeader,
     border: none;
     box-shadow: none;
 }
-.boton-login{
+
+.boton-login {
     margin-top: 20px;
     justify-content: center;
+}
+
+ion-footer ion-toolbar {
+    text-align: center;
+}
+
+ion-footer p {
+    margin: 10px 0;
+    font-size: 0.875rem;
+    color: #666;
 }
 </style>

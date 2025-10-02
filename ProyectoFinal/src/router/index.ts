@@ -4,10 +4,15 @@ import VueRouter from 'vue-router'
 import Inicio from '../views/Inicio.vue'
 import HistorialFinanzas from '../views/HistorialFinanzas.vue'
 import Login from '../views/Login.vue'
-import Pagina3 from '../views/Pagina3.vue'
+import politica from '@/views/politica.vue'
+import AyudaSoporte from '../views/AyudaSoporte.vue'
 import Calendario from '../views/Calendario.vue'
 
 const routes: Array<RouteRecordRaw> = [
+    {
+        path: '/',
+        redirect: '/inicio'
+    },
     {
         path: '/inicio',
         name: 'Inicio',
@@ -24,17 +29,25 @@ const routes: Array<RouteRecordRaw> = [
         component: Login
     },
     {
+        path: '/politica',
+        name: 'politica',
+        component: politica
+    },
+    {
         path: '/calendario',
         name: 'Calendario',
         component: Calendario
     },
     {
-        path: '/pagina3',
-        name: 'Pagina3',
-        component: Pagina3
-    },
+        path: '/ayuda-soporte',
+        name: 'AyudaSoporte',
+        component: AyudaSoporte
+    }
 ]
+
 const router = createRouter({
-    history: createWebHistory(import.meta.env.BASE_URL), routes
+    history: createWebHistory(import.meta.env.BASE_URL), 
+    routes
 })
+
 export default router
