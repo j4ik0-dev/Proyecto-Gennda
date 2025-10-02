@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
+import VueRouter from 'vue-router'
 import Inicio from '../views/Inicio.vue'
 import HistorialFinanzas from '../views/HistorialFinanzas.vue'
 import Login from '../views/Login.vue'
