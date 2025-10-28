@@ -30,7 +30,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { IonPage, IonButton, IonFooter, IonContent, IonButtons, IonHeader, IonToolbar, IonMenuButton, IonTitle, } from '@ionic/vue';
+import { IonButtons,IonPage, IonButton, IonFooter, IonContent, IonHeader, IonToolbar, IonMenuButton, IonTitle, } from '@ionic/vue';
 </script>
 <style socoped>
 .subcontainer {

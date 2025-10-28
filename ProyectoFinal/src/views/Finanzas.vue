@@ -2,6 +2,9 @@
   <ion-page>
     <ion-header>
       <ion-toolbar color="light">
+        <ion-buttons slot="start">
+          <ion-menu-button />
+        </ion-buttons>
         <ion-title>Finanzas</ion-title>
         <ion-buttons slot="end">
           <ion-searchbar 
@@ -166,12 +169,18 @@
         </div>
       </div>
     </ion-content>
+    <ion-footer>
+      <ion-toolbar>
+        <p>© 2025 Gennda - Todos los derechos reservados</p>
+      </ion-toolbar>
+    </ion-footer>
   </ion-page>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import {
+  IonFooter,
   IonPage,
   IonHeader,
   IonToolbar,
@@ -188,7 +197,8 @@ import {
   IonCol,
   IonChip,
   IonLabel,
-  IonText
+  IonText,
+  IonMenuButton
 } from '@ionic/vue';
 import {
   notifications,
@@ -259,9 +269,7 @@ const historyItems = [
 </script>
 
 <style scoped>
-.finance-page {
-  --background: linear-gradient(135deg, #A5F3FC 0%, #67E8F9 100%);
-}
+
 
 /* ...existing code... */
 .content-wrapper {
