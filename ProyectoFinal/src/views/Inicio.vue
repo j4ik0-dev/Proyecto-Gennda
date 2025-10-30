@@ -4,7 +4,7 @@
     <ion-header>
       <ion-toolbar>
         <ion-title>Gennda</ion-title>
-          <ion-button id="boton-sesion" slot="end">Iniciar Sesion</ion-button>
+            <ion-button id="boton-sesion" slot="end" @click="$router.push('/login')">Iniciar Sesion</ion-button>
       </ion-toolbar>
     </ion-header>
     <ion-content>
@@ -16,7 +16,10 @@
             </div>
             <h1>Bienvenido a Gennda</h1>
             <p>La mejor solución para tu organizacion</p>
-            <ion-button id="boton-registro" size="default">Registrase</ion-button>
+            <router-link to="/registro">
+              <ion-button id="boton-registro" size="default">Registrase</ion-button>
+            </router-link>
+            
           </div>
         </div>
       </div>
@@ -49,7 +52,9 @@ import { IonButtons,IonPage, IonButton, IonFooter, IonContent, IonHeader, IonToo
   height: 100%;
   width: 100%;
 }
-
+ion-title{
+  color: black;
+}
 .central-box {
   padding: 40px;
   border-radius: 20px;
@@ -89,7 +94,8 @@ import { IonButtons,IonPage, IonButton, IonFooter, IonContent, IonHeader, IonToo
 }
 #boton-sesion{
   margin-right: 10px;
-  color: white;
+  --color: #ffffff;
+  color: #ffffff;
 }
 ion-footer ion-toolbar {
   text-align: center;

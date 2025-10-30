@@ -4,7 +4,7 @@ ion-menu {
 
 ion-toolbar {
     --background: #63c8da;
-    --color: #000000;
+    --color: #000000; /* cambiar globalmente a blanco */
 }
 
 ion-content {

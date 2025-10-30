@@ -9,6 +9,7 @@
       <ion-content>
         <ion-list>
           <ion-item router-link="/">Inicio</ion-item>
+          <ion-item router-link="/registro">Registrarse</ion-item>
           <ion-item router-link="/login">Iniciar sesion</ion-item>
           <ion-item router-link="/calendario">Calendario</ion-item>
           <ion-item router-link="/finanzas">Finanzas</ion-item>
@@ -19,9 +20,8 @@
       </ion-content>
     </ion-menu>
     <div class="ion-page" id="main-content">
-      <ion-router-outlet />
+          <ion-router-outlet />
     </div>
-    <ion-router-outlet />
   </ion-app>
 </template>
 

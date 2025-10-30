@@ -7,7 +7,8 @@ import Login from '../views/Login.vue'
 import politica from '@/views/politica.vue'
 import AyudaSoporte from '../views/AyudaSoporte.vue'
 import Calendario from '../views/Calendario.vue'
-import Finanzas from '../views/Finanzas.vue';
+import Finanzas from '../views/Finanzas.vue'
+import Registro from '@/views/Registro.vue';
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -49,6 +50,11 @@ const routes: Array<RouteRecordRaw> = [
         name: 'Finanzas',
         component: Finanzas
 
+    },
+    {
+        path: '/registro',
+        name: 'Registro',
+        component: Registro
     }
 ]
 

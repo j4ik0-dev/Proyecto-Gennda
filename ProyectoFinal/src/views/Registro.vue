@@ -5,10 +5,14 @@
         <ion-content class="login-container">
             <div class="subcontainer">
                 <div class="login-box">
-                    <h1>Iniciar Sesion</h1>
+                    <h1>Registro</h1>
                     <div class="sub-logo">
                         <img class="logo" src="/logo2.png" alt="logo" />
                     </div>
+                    <ion-item>
+                        <ion-label position="floating">Nombre</ion-label>
+                        <ion-input type="text"></ion-input>
+                    </ion-item>
                     <ion-item>
                         <ion-label position="floating">Correo</ion-label>
                         <ion-input type="email"></ion-input>
@@ -19,12 +23,12 @@
                     </ion-item>
                     <div class="boton-login">
                         <ion-button expand="block" color="primary">
-                            Iniciar Sesión
+                            Registrarse
                         </ion-button>
                     </div>
                     <p class="register-text">
-                        ¿No tienes cuenta?
-                        <router-link to="/registro">Regístrate</router-link>
+                        ¿Ya tienes cuenta?
+                        <router-link to="/login">Inicia sesion</router-link>
                     </p>
                 </div>
             </div>
@@ -40,6 +44,7 @@
 import { IonPage, IonFooter, IonContent, IonLabel, IonInput, IonItem, IonButton, IonHeader, IonToolbar, IonMenuButton, IonTitle, } from '@ionic/vue';
 
 </script>
+// ...existing code...
 <style scoped>
 :root {
     --card-max-width: 420px;
@@ -52,8 +57,8 @@ import { IonPage, IonFooter, IonContent, IonLabel, IonInput, IonItem, IonButton,
     display: flex;
     justify-content: center;
     align-items: center;
-    /* considerar header/footer */
     min-height: calc(100vh - 80px);
+    /* deja espacio para header/footer */
     padding: 20px;
     box-sizing: border-box;
 }
@@ -71,7 +76,6 @@ import { IonPage, IonFooter, IonContent, IonLabel, IonInput, IonItem, IonButton,
     flex-direction: column;
     gap: var(--gap);
     margin: 20px 0;
-    box-sizing: border-box;
 }
 
 /* Logo adaptable */
@@ -88,20 +92,21 @@ import { IonPage, IonFooter, IonContent, IonLabel, IonInput, IonItem, IonButton,
     margin: 8px 0 4px;
 }
 
-/* Inputs Ionic con padding interno para que no queden pegados a los lados */
+/* Inputs y items Ionic ocupan todo el ancho del card */
 .login-box ion-item {
     --background: transparent;
     --ion-item-background: transparent;
     border: none;
     box-shadow: none;
     width: 100%;
+    /* Aumenta el padding interno para que los inputs no queden pegados a los lados */
     --padding-start: 12px;
     --padding-end: 12px;
-    padding-inline: 8px;
+    padding-inline: 6px;
     box-sizing: border-box;
 }
 
-/* Botón ocupa todo el ancho en móviles */
+/* Botón ocupa todo el ancho en pantallas pequeñas y mantiene margen */
 .boton-login {
     margin-top: 8px;
     display: flex;
@@ -140,7 +145,7 @@ ion-footer p {
     color: #666;
 }
 
-/* Breakpoints */
+/* Ajustes por breakpoints */
 @media (min-width: 600px) {
     :root {
         --card-padding: 34px;
@@ -173,7 +178,7 @@ ion-footer p {
     }
 }
 
-/* Accesibilidad: foco */
+/* Accesibilidad: tamaños y foco */
 ion-input,
 ion-button {
     font-size: 0.95rem;
@@ -185,3 +190,4 @@ ion-button:focus {
     box-shadow: 0 0 0 3px rgba(48, 57, 155, 0.12);
 }
 </style>
+// ...existing code...
