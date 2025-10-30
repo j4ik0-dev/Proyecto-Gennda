@@ -11,18 +11,23 @@
                     </div>
                     <ion-item>
                         <ion-label position="floating">Nombre</ion-label>
-                        <ion-input type="text"></ion-input>
+                        <ion-input type="text" v-model="formData.nombre"></ion-input>
                     </ion-item>
                     <ion-item>
                         <ion-label position="floating">Correo</ion-label>
-                        <ion-input type="email"></ion-input>
+                        <ion-input type="email" v-model="formData.email"></ion-input>
                     </ion-item>
                     <ion-item>
                         <ion-label position="floating">Contraseña</ion-label>
-                        <ion-input type="password"></ion-input>
+                        <ion-input type="password" v-model="formData.password"></ion-input>
+                    </ion-item>                    
+                    <ion-item>
+                        <ion-label position="floating">Confirmar Contraseña</ion-label>
+                        <ion-input type="password" v-model="formData.password_confirmation"></ion-input>
                     </ion-item>
+
                     <div class="boton-login">
-                        <ion-button expand="block" color="primary">
+                        <ion-button expand="block" color="primary" @click="handleRegister">
                             Registrarse
                         </ion-button>
                     </div>
@@ -41,10 +46,57 @@
     </ion-page>
 </template>
 <script setup lang="ts">
-import { IonPage, IonFooter, IonContent, IonLabel, IonInput, IonItem, IonButton, IonHeader, IonToolbar, IonMenuButton, IonTitle, } from '@ionic/vue';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { IonPage, IonFooter, IonContent, IonLabel, IonInput, IonItem, IonButton, IonHeader, IonToolbar, toastController
+} from '@ionic/vue';
+import axios from 'axios';
+const formData = ref({
+    nombre: '',
+    email: '',
+    password: '',
+    password_confirmation: ''
+});
 
+const router = useRouter();
+const API_URL = 'http://127.0.0.1:8000/api';
+const presentToast = async (message: string, color: 'success' | 'danger') => {
+    const toast = await toastController.create({
+        message: message,
+        duration: 3000,
+        position: 'top',
+        color: color,
+    });
+    await toast.present();
+};
+
+const handleRegister = async () => {
+    if (formData.value.password !== formData.value.password_confirmation) {
+        presentToast('Las contraseñas no coinciden', 'danger');
+        return;
+    }
+    try {
+        const response = await axios.post(`${API_URL}/register`, formData.value);
+        if (response.status === 201) {
+            console.log('Registro exitoso:', response.data);            
+            presentToast('¡Registro exitoso! Ahora puedes iniciar sesión.', 'success');
+            router.push('/login');
+        }
+    } catch (error: any) {
+        console.error('Error en el registro:', error);
+        if (error.response && error.response.status === 422) {
+            const errors = error.response.data.errors;
+            let errorMessage = 'Error de validación:';
+            for (const key in errors) {
+                errorMessage += `\n- ${errors[key][0]}`;
+            }
+            presentToast(errorMessage, 'danger');
+        } else {
+            presentToast('No se pudo completar el registro. Intenta más tarde.', 'danger');
+        }
+    }
+};
 </script>
-// ...existing code...
 <style scoped>
 :root {
     --card-max-width: 420px;
@@ -52,18 +104,15 @@ import { IonPage, IonFooter, IonContent, IonLabel, IonInput, IonItem, IonButton,
     --gap: 18px;
 }
 
-/* Contenedor centrado y adaptable */
 .login-container {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: calc(100vh - 80px);
-    /* deja espacio para header/footer */
     padding: 20px;
     box-sizing: border-box;
 }
 
-/* Card principal */
 .login-box {
     background: #ffffff;
     padding: var(--card-padding);
@@ -78,7 +127,6 @@ import { IonPage, IonFooter, IonContent, IonLabel, IonInput, IonItem, IonButton,
     margin: 20px 0;
 }
 
-/* Logo adaptable */
 .sub-logo {
     display: flex;
     justify-content: center;
@@ -92,21 +140,18 @@ import { IonPage, IonFooter, IonContent, IonLabel, IonInput, IonItem, IonButton,
     margin: 8px 0 4px;
 }
 
-/* Inputs y items Ionic ocupan todo el ancho del card */
 .login-box ion-item {
     --background: transparent;
     --ion-item-background: transparent;
     border: none;
     box-shadow: none;
     width: 100%;
-    /* Aumenta el padding interno para que los inputs no queden pegados a los lados */
     --padding-start: 12px;
     --padding-end: 12px;
     padding-inline: 6px;
     box-sizing: border-box;
 }
 
-/* Botón ocupa todo el ancho en pantallas pequeñas y mantiene margen */
 .boton-login {
     margin-top: 8px;
     display: flex;
@@ -118,7 +163,6 @@ import { IonPage, IonFooter, IonContent, IonLabel, IonInput, IonItem, IonButton,
     max-width: 320px;
 }
 
-/* Texto de registro */
 .register-text {
     margin-top: 6px;
     font-size: 0.95rem;
@@ -134,7 +178,6 @@ import { IonPage, IonFooter, IonContent, IonLabel, IonInput, IonItem, IonButton,
     text-decoration: underline;
 }
 
-/* Footer */
 ion-footer ion-toolbar {
     text-align: center;
 }
@@ -145,7 +188,6 @@ ion-footer p {
     color: #666;
 }
 
-/* Ajustes por breakpoints */
 @media (min-width: 600px) {
     :root {
         --card-padding: 34px;
@@ -178,7 +220,6 @@ ion-footer p {
     }
 }
 
-/* Accesibilidad: tamaños y foco */
 ion-input,
 ion-button {
     font-size: 0.95rem;
@@ -190,4 +231,3 @@ ion-button:focus {
     box-shadow: 0 0 0 3px rgba(48, 57, 155, 0.12);
 }
 </style>
-// ...existing code...
