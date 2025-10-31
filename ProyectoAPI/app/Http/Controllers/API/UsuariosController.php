@@ -1,13 +1,13 @@
 <?php
-
 namespace App\Http\Controllers\API;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Usuarios;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
+
 class UsuariosController extends Controller
 {
     public function register(Request $request)
@@ -17,19 +17,15 @@ class UsuariosController extends Controller
             'email' => 'required|string|email|max:255|unique:usuarios',
             'password' => 'required|string|min:8|confirmed',
         ]);
-
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-
         $usuario = Usuarios::create([
             'nombre' => $request->nombre,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
-
         $token = $usuario->createToken('auth_token')->plainTextToken;
-
         return response()->json([
             'message' => '¡Usuario registrado exitosamente!',
             'access_token' => $token,
@@ -37,22 +33,18 @@ class UsuariosController extends Controller
             'user' => $usuario
         ], 201);
     }
-
     public function login(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
             'password' => 'required|string',
         ]);
-
         $usuario = Usuarios::where('email', $request->email)->first();
-
         if (!$usuario || !Hash::check($request->password, $usuario->password)) {
             return response()->json([
                 'message' => 'Las credenciales proporcionadas son incorrectas.'
             ], 401);
         }
-
         $usuario->tokens()->delete();
         $token = $usuario->createToken('auth_token')->plainTextToken;
 
@@ -71,9 +63,6 @@ class UsuariosController extends Controller
             'message' => 'Sesión cerrada exitosamente.'
         ], 200);
     }
-
-
-
     public function index()
     {
         
@@ -110,12 +99,29 @@ class UsuariosController extends Controller
         if ($user->foto_path) {
             Storage::disk('public')->delete($user->foto_path);
         }
-
         $path = $request->file('foto')->store('uploads/fotos', 'public');
-
         $user->foto_path = $path;
         $user->save();
+        return response()->json($user);
+    }
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+        $validator = Validator::make($request->all(), [
+            'nombre' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('usuarios')->ignore($user->id),
+            ],
+        ]);
 
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+        $user->update($validator->validated());
         return response()->json($user);
     }
 

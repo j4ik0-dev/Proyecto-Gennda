@@ -5,7 +5,6 @@
         <ion-content class="login-container">
             <div class="subcontainer">
                 <div class="login-box">
-                    <h1>Iniciar Sesion</h1>
                     <div class="sub-logo">
                         <img class="logo" src="/logo2.png" alt="logo" />
                     </div>
