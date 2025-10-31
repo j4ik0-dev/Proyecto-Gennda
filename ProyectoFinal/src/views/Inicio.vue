@@ -1,5 +1,4 @@
 <template>
-<div>
   <ion-page>
     <ion-header>
       <ion-toolbar>
@@ -30,7 +29,6 @@
       </ion-toolbar>
     </ion-footer>
   </ion-page>
-  </div>
 </template>
 <script setup lang="ts">
 import { IonButtons,IonPage, IonButton, IonFooter, IonContent, IonHeader, IonToolbar, IonMenuButton, IonTitle, } from '@ionic/vue';

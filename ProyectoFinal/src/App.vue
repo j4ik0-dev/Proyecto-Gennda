@@ -9,6 +9,7 @@
       <ion-content>
         <ion-list>
           <ion-item router-link="/">Inicio</ion-item>
+          <ion-item router-link="/perfil">Perfil</ion-item>
           <ion-item router-link="/registro">Registrarse</ion-item>
           <ion-item router-link="/login">Iniciar sesion</ion-item>
           <ion-item router-link="/calendario">Calendario</ion-item>

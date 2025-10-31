@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Usuarios;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Support\Facades\Storage;
 class UsuariosController extends Controller
 {
     public function register(Request $request)
@@ -95,4 +95,28 @@ class UsuariosController extends Controller
     public function destroy($id)
     {
     }
+    public function updatePhoto(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Límite de 2MB
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $user = $request->user();
+
+        if ($user->foto_path) {
+            Storage::disk('public')->delete($user->foto_path);
+        }
+
+        $path = $request->file('foto')->store('uploads/fotos', 'public');
+
+        $user->foto_path = $path;
+        $user->save();
+
+        return response()->json($user);
+    }
+
 }
