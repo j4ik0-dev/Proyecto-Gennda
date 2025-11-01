@@ -2,7 +2,8 @@
     <ion-page>
         <ion-header>
         </ion-header>
-        <ion-content class="login-container">
+        <!-- CLASE ELIMINADA DE AQUÍ -->
+        <ion-content>
             <div class="subcontainer">
                 <div class="login-box">
                     <div class="sub-logo">
@@ -19,14 +20,16 @@
                     <ion-item>
                         <ion-label position="floating">Contraseña</ion-label>
                         <ion-input type="password" v-model="formData.password"></ion-input>
-                    </ion-item>                    
+                    </ion-item>
                     <ion-item>
                         <ion-label position="floating">Confirmar Contraseña</ion-label>
                         <ion-input type="password" v-model="formData.password_confirmation"></ion-input>
                     </ion-item>
 
                     <div class="boton-login">
+                        <!-- ICONO AÑADIDO AQUÍ -->
                         <ion-button expand="block" color="primary" @click="handleRegister">
+                            <ion-icon slot="start" :icon="personAddOutline"></ion-icon>
                             Registrarse
                         </ion-button>
                     </div>
@@ -47,9 +50,13 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { IonPage, IonFooter, IonContent, IonLabel, IonInput, IonItem, IonButton, IonHeader, IonToolbar, toastController
+// IMPORTADO IonIcon
+import { IonPage, IonFooter, IonContent, IonLabel, IonInput, IonItem, IonButton, IonHeader, IonToolbar, toastController, IonIcon
 } from '@ionic/vue';
 import axios from 'axios';
+// IMPORTADO el icono
+import { personAddOutline } from 'ionicons/icons';
+
 const formData = ref({
     nombre: '',
     email: '',
@@ -77,7 +84,7 @@ const handleRegister = async () => {
     try {
         const response = await axios.post(`${API_URL}/register`, formData.value);
         if (response.status === 201) {
-            console.log('Registro exitoso:', response.data);            
+            console.log('Registro exitoso:', response.data);
             presentToast('¡Registro exitoso! Ahora puedes iniciar sesión.', 'success');
             router.push('/login');
         }
@@ -103,11 +110,15 @@ const handleRegister = async () => {
     --gap: 18px;
 }
 
-.login-container {
+/* REGLA ELIMINADA: .login-container */
+
+/* ESTA REGLA FUE MODIFICADA PARA CENTRAR TODO */
+.subcontainer {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 80px);
+    width: 100%;
+    height: 100%; /* <-- Clave para centrar verticalmente */
     padding: 20px;
     box-sizing: border-box;
 }
@@ -160,6 +171,11 @@ const handleRegister = async () => {
 .boton-login ion-button {
     width: 100%;
     max-width: 320px;
+}
+
+/* CSS AÑADIDO PARA EL ICONO */
+.boton-login ion-icon {
+    margin-right: 6px;
 }
 
 .register-text {

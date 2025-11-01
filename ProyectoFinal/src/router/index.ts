@@ -10,6 +10,7 @@ import Calendario from '../views/Calendario.vue'
 import Finanzas from '../views/Finanzas.vue'
 import Registro from '@/views/Registro.vue';
 import Perfil from '@/views/Perfil.vue';
+import ViewError from '@/views/ViewError.vue';
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -24,7 +25,8 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: '/historial',
         name: 'Historial',
-        component: HistorialFinanzas
+        component: HistorialFinanzas,
+        meta: { requiresAuth: true }
     },
     {
         path: '/login',
@@ -34,22 +36,26 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: '/politica',
         name: 'politica',
-        component: politica
+        component: politica,
+        meta: { requiresAuth: true }
     },
     {
         path: '/calendario',
         name: 'Calendario',
-        component: Calendario
+        component: Calendario,
+        meta: { requiresAuth: true }
     },
     {
         path: '/ayuda-soporte',
         name: 'AyudaSoporte',
-        component: AyudaSoporte
+        component: AyudaSoporte,
+        meta: { requiresAuth: true }
     },
     {
         path: '/finanzas',
         name: 'Finanzas',
-        component: Finanzas
+        component: Finanzas,
+        meta: { requiresAuth: true }
 
     },
     {
@@ -60,13 +66,28 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: '/perfil',
         name: 'Perfil',
-        component: Perfil
+        component: Perfil,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        name: 'ViewError',
+        component: ViewError
     }
 ]
 
 const router = createRouter({
-    history: createWebHistory(import.meta.env.BASE_URL), 
+    history: createWebHistory(import.meta.env.BASE_URL),
     routes
-})
+});
+router.beforeEach((to, from, next) => {
+    const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+    const token = localStorage.getItem('auth_token');
+    if (requiresAuth && !token) {
+        next({ path: '/login' });
+    } else {
+        next();
+    }
+});
 
 export default router

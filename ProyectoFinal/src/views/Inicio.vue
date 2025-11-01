@@ -3,22 +3,27 @@
     <ion-header>
       <ion-toolbar>
         <ion-title>Gennda</ion-title>
-            <ion-button id="boton-sesion" slot="end" @click="$router.push('/login')">Iniciar Sesion</ion-button>
+        <!-- BOTÓN DE LOGIN CON ICONO --><ion-button id="boton-sesion" slot="end" @click="$router.push('/login')">
+          Iniciar Sesion
+          <ion-icon slot="end" :icon="logInOutline"></ion-icon>
+        </ion-button>
       </ion-toolbar>
     </ion-header>
     <ion-content>
       <div class="inicio-container">
         <div class="subcontainer">
           <div class="central-box">
-            <div cass="sub-logo">
+            <!-- Corregido: 'cass' por 'class' --><div class="sub-logo">
               <img class="logo-inicio" src="/logo.png" alt="logo"></img>
             </div>
             <h1>Bienvenido a Gennda</h1>
             <p>La mejor solución para tu organizacion</p>
             <router-link to="/registro">
-              <ion-button id="boton-registro" size="default">Registrase</ion-button>
+              <!-- BOTÓN DE REGISTRO CON ICONO --><ion-button id="boton-registro" size="default">
+                <ion-icon slot="start" :icon="personAddOutline"></ion-icon>
+                Registrase
+              </ion-button>
             </router-link>
-            
           </div>
         </div>
       </div>
@@ -30,17 +35,20 @@
     </ion-footer>
   </ion-page>
 </template>
+
 <script setup lang="ts">
-import { IonButtons,IonPage, IonButton, IonFooter, IonContent, IonHeader, IonToolbar, IonMenuButton, IonTitle, } from '@ionic/vue';
+// Importar 'IonIcon' y los iconos necesarios
+import { IonButtons,IonPage, IonButton, IonFooter, IonContent, IonHeader, IonToolbar, IonMenuButton, IonTitle, IonIcon } from '@ionic/vue';
+import { logInOutline, personAddOutline } from 'ionicons/icons'; // <-- Importación de los iconos
 </script>
-<style socoped>
+
+<style scoped>
 .subcontainer {
   display: flex;
   width: 100%;
   align-items: center;
   justify-content: center;
   height: 100%;
-
 }
 
 .inicio-container {
@@ -88,13 +96,20 @@ ion-title{
   width: 150px;
   align-self: center;
   margin-top: 20px;
-  color: white;
 }
 #boton-sesion{
   margin-right: 10px;
-  --color: #ffffff;
-  color: #ffffff;
 }
+
+/* Estilos para que los iconos se vean bien (margen) */
+#boton-sesion ion-icon {
+  margin-left: 6px;
+}
+
+#boton-registro ion-icon {
+  margin-right: 6px;
+}
+
 ion-footer ion-toolbar {
   text-align: center;
 }
@@ -105,3 +120,4 @@ ion-footer p {
   color: #666;
 }
 </style>
+

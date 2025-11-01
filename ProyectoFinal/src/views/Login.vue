@@ -2,7 +2,8 @@
     <ion-page>
         <ion-header>
         </ion-header>
-        <ion-content class="login-container">
+        <!-- CLASE ELIMINADA DE AQUÍ -->
+        <ion-content>
             <div class="subcontainer">
                 <div class="login-box">
                     <div class="sub-logo">
@@ -17,8 +18,10 @@
                         <ion-input type="password" v-model="formData.password"></ion-input>
                     </ion-item>
                     <div class="boton-login">
+                        <!-- ICONO AÑADIDO AQUÍ -->
                         <ion-button expand="block" color="primary" @click="handleLogin">
                             Iniciar Sesión
+                            <ion-icon slot="end" :icon="logInOutline"></ion-icon>
                         </ion-button>
                     </div>
                     <p class="register-text">
@@ -39,9 +42,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { IonPage, IonFooter, IonContent, IonLabel, IonInput, IonItem, IonButton, IonHeader, IonToolbar, toastController // Importamos toastController
+// IMPORTADO IonIcon
+import { IonPage, IonFooter, IonContent, IonLabel, IonInput, IonItem, IonButton, IonHeader, IonToolbar, toastController, IonIcon
 } from '@ionic/vue';
 import axios from 'axios';
+// IMPORTADO el icono
+import { logInOutline } from 'ionicons/icons';
 
 const formData = ref({
     email: '',
@@ -53,6 +59,8 @@ const router = useRouter();
 const API_URL = 'http://127.0.0.1:8000/api';
 
 const presentToast = async (message: string, color: 'success' | 'danger') => {
+// ... (resto del script sin cambios)
+// ... (resto del script sin cambios)
     const toast = await toastController.create({
         message: message,
         duration: 3000,
@@ -99,11 +107,15 @@ const handleLogin = async () => {
     --gap: 18px;
 }
 
-.login-container {
+/* REGLA ELIMINADA: .login-container */
+
+/* ESTA REGLA FUE MODIFICADA PARA CENTRAR TODO */
+.subcontainer {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 80px);
+    width: 100%;
+    height: 100%; /* <-- Esto es clave para centrar verticalmente */
     padding: 20px;
     box-sizing: border-box;
 }
@@ -157,6 +169,11 @@ const handleLogin = async () => {
 .boton-login ion-button {
     width: 100%;
     max-width: 320px;
+}
+
+/* CSS AÑADIDO PARA EL ICONO */
+.boton-login ion-icon {
+    margin-left: 6px;
 }
 
 .register-text {
@@ -227,3 +244,4 @@ ion-button:focus {
     box-shadow: 0 0 0 3px rgba(48, 57, 155, 0.12);
 }
 </style>
+
