@@ -575,4 +575,13 @@ ion-grid {
 ion-col {
   padding: 8px;
 }
+ion-footer ion-toolbar {
+  text-align: center;
+}
+
+ion-footer p {
+  margin: 10px 0;
+  font-size: 0.875rem;
+  color: #666;
+}
 </style>

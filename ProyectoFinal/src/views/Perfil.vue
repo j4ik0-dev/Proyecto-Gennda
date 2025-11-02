@@ -39,6 +39,7 @@
                         <ion-input type="email" v-model="editableData.email"></ion-input>
                     </ion-item>
                 </div>
+
                 <div class="button-group" v-if="isEditing">
                     <ion-button fill="outline" color="medium" @click="cancelEditing">
                         <ion-icon slot="start" :icon="close"></ion-icon>
@@ -49,8 +50,7 @@
                         Guardar
                     </ion-button>
                 </div>
-
-                <div v-if="!isEditing">
+                <div v-if="!isEditing" class="button-stack">
                     <ion-button @click="startEditing" color="primary" expand="block" fill="outline"
                         class="edit-profile-button">
                         Editar Perfil
@@ -65,6 +65,34 @@
 
             </div>
         </ion-content>
+        <ion-modal :is-open="showCropperModal" @didDismiss="closeCropperModal">
+            <ion-header>
+                <ion-toolbar>
+                    <ion-title>Recortar Foto</ion-title>
+                    <ion-buttons slot="end">
+                        <ion-button @click="closeCropperModal">
+                            <ion-icon :icon="close" slot="icon-only"></ion-icon>
+                        </ion-button>
+                    </ion-buttons>
+                </ion-toolbar>
+            </ion-header>
+
+            <ion-content class="ion-padding">
+                <div class="cropper-container" v-if="selectedImage">
+                    <cropper ref="cropperRef" :src="selectedImage" :stencil-props="{
+                        aspectRatio: 1 / 1,
+                        movable: true,
+                        scalable: true,
+                    }" image-restriction="stencil" stencil-component="circle-stencil" />
+                </div>
+
+                <ion-button expand="block" @click="handleCrop" class="crop-button">
+                    Guardar Foto
+                    <ion-icon :icon="checkmark" slot="end"></ion-icon>
+                </ion-button>
+            </ion-content>
+        </ion-modal>
+
         <ion-footer>
             <ion-toolbar>
                 <p>© 2025 Gennda - Todos los derechos reservados</p>
@@ -76,19 +104,24 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import {IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonFooter,IonAvatar, IonButton, IonButtons, IonList, IonItem, IonLabel,IonIcon, IonMenuButton, loadingController, toastController, IonInput} from '@ionic/vue';
-import { camera, logOutOutline, pencil, save, close } from 'ionicons/icons';
+import {IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonFooter, IonAvatar,IonButton, IonButtons, IonItem, IonLabel, IonIcon, IonMenuButton,loadingController, toastController, IonInput,IonModal} from '@ionic/vue';
+import { camera, logOutOutline, pencil, save, close, checkmark } from 'ionicons/icons';
+import { Cropper, CircleStencil } from 'vue-advanced-cropper';
+import 'vue-advanced-cropper/dist/style.css';
 import axios from 'axios';
 
 const router = useRouter();
 const user = ref<any>(null);
 const fileInput = ref<HTMLInputElement | null>(null);
-
 const isEditing = ref(false);
 const editableData = ref({
     nombre: '',
     email: ''
 });
+
+const showCropperModal = ref(false);
+const selectedImage = ref<string | null>(null);
+const cropperRef = ref<any>(null);
 
 const API_URL = 'http://127.0.0.1:8000/api';
 
@@ -102,12 +135,6 @@ const loadUserData = () => {
         user.value = JSON.parse(userDataString);
     } else {
         handleLogout(false);
-    }
-};
-
-const triggerFileInput = () => {
-    if (!isEditing.value) {
-        fileInput.value?.click();
     }
 };
 
@@ -139,9 +166,8 @@ const handleUpdateProfile = async () => {
         if (response.status === 200) {
             user.value = response.data;
             localStorage.setItem('user_data', JSON.stringify(response.data));
-
             presentToast('Perfil actualizado con éxito', 'success');
-            isEditing.value = false; // Sal del modo edición
+            isEditing.value = false;
         }
     } catch (error: any) {
         console.error('Error al actualizar perfil:', error);
@@ -154,13 +180,45 @@ const handleUpdateProfile = async () => {
         await loading.dismiss();
     }
 };
-
+const triggerFileInput = () => {
+    if (!isEditing.value) {
+        fileInput.value?.click();
+    }
+};
 const onFileChange = (event: Event) => {
     const target = event.target as HTMLInputElement;
     const file = target.files?.[0];
+
     if (file) {
-        uploadPhoto(file);
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            selectedImage.value = e.target?.result as string;
+            showCropperModal.value = true;
+        };
+        reader.readAsDataURL(file);
     }
+    target.value = '';
+};
+
+const handleCrop = () => {
+    if (!cropperRef.value) return;
+    const { canvas } = cropperRef.value.getResult();
+    if (canvas) {
+        canvas.toBlob(async (blob: Blob | null) => {
+            if (blob) {
+                const croppedFile = new File([blob], 'profile_photo.jpg', {
+                    type: 'image/jpeg',
+                });
+                closeCropperModal();
+                await uploadPhoto(croppedFile); 
+            }
+        }, 'image/jpeg');
+    }
+};
+
+const closeCropperModal = () => {
+    showCropperModal.value = false;
+    selectedImage.value = null;
 };
 
 const uploadPhoto = async (file: File) => {
@@ -289,7 +347,6 @@ ion-avatar {
     font-size: 18px;
 }
 
-
 .user-info-container {
     width: 100%;
     margin: 20px 0;
@@ -340,16 +397,28 @@ ion-avatar {
     flex: 1;
 }
 
-
-.edit-profile-button {
-    margin-top: 10px;
-    margin-bottom: 8px;
+.button-stack {
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
 }
 
+.edit-profile-button,
 .logout-button {
-    margin-top: 0;
     width: 100%;
+    margin: 0;
+}
+
+.cropper-container {
+    width: 100%;
+    height: 60vh;
+    background: #f0f0f0;
+}
+
+.crop-button {
+    margin-top: 20px;
 }
 
 ion-footer ion-toolbar {

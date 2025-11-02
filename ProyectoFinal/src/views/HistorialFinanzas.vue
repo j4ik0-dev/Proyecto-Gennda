@@ -28,7 +28,7 @@
     </ion-content>
     <ion-footer>
       <ion-toolbar>
-        <p>Pie de página</p>
+        <p>© 2025 Gennda - Todos los derechos reservados</p>
       </ion-toolbar>
     </ion-footer>
   </ion-page>
@@ -104,5 +104,14 @@ ion-label h1 {
 ion-label p {
   margin: 0;
   font-size: 0.875rem;
+}
+ion-footer ion-toolbar {
+  text-align: center;
+}
+
+ion-footer p {
+  margin: 10px 0;
+  font-size: 0.875rem;
+  color: #666;
 }
 </style>
