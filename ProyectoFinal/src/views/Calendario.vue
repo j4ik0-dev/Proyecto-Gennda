@@ -5,23 +5,40 @@
         <ion-buttons slot="start">
           <ion-menu-button />
         </ion-buttons>
-        <ion-title>Calendario</ion-title>
+        
+        <ion-title>Agenda para el Mes</ion-title>
+        <ion-buttons slot="primary">
+            <ion-button @click="changeMonth('prev')" aria-label="Mes anterior">
+                <ion-icon slot="icon-only" :icon="chevronBackOutline"></ion-icon>
+            </ion-button>
+            <ion-button @click="changeMonth('next')" aria-label="Mes siguiente">
+                <ion-icon slot="icon-only" :icon="chevronForwardOutline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+
         <ion-buttons slot="end">
           <ion-searchbar 
-            placeholder="Calendario Junio" 
+            placeholder="Buscar..." 
             :debounce="300"
             style="max-width: 250px;"
+            v-model="searchQuery"
           ></ion-searchbar>
-          <ion-button fill="clear">
-            <ion-icon :icon="calendarOutline"></ion-icon>
+          
+          <ion-button 
+            fill="clear" 
+            aria-label="Ver Eventos" 
+            @click="isSidebarVisible = true" 
+            class="ion-hide-lg-up"
+          >
+            <ion-icon :icon="listOutline"></ion-icon>
           </ion-button> 
-          <ion-button fill="clear">
-            <ion-icon :icon="calendarNumberOutline"></ion-icon>
-          </ion-button>
-          <ion-chip>
-            <ion-label>Agenda proximas</ion-label>
-          </ion-chip>
-          <ion-button shape="round" color="primary">
+          
+          <ion-button 
+            shape="round" 
+            color="primary" 
+            aria-label="Perfil"
+            @click="goToProfile"
+          >
             <ion-icon :icon="personOutline"></ion-icon>
           </ion-button>
         </ion-buttons>
@@ -30,28 +47,33 @@
 
     <ion-content class="calendar-page">
       <div class="content-wrapper">
-        <!-- Main Calendar Area -->
         <div class="main-calendar-area">
           <ion-card class="calendar-card">
             <ion-card-header>
               <div class="calendar-header-content">
                 <div class="header-left">
-                  <ion-card-title class="month-title">{{ currentMonth }}</ion-card-title>
+                  <ion-card-title class="month-title">{{ currentMonthName }}</ion-card-title>
                   
                   <div class="categories-container">
                     <ion-chip 
-                      v-for="(category, idx) in eventCategories" 
-                      :key="idx"
+                      v-for="category in eventCategories" 
+                      :key="category.id"
                       :style="{ '--background': category.color }"
                       class="category-chip"
                     >
                       <div class="category-dot" :style="{ backgroundColor: category.color }"></div>
-                      <ion-label>{{ category.name }}</ion-label>
+                      <ion-label>{{ category.nombre }}</ion-label>
                     </ion-chip>
-                    <ion-button fill="clear" size="small">
+                    
+                    <ion-button 
+                      fill="clear" 
+                      size="small" 
+                      aria-label="Añadir categoría" 
+                      @click="openCategoriaModal"
+                    >
                       <ion-icon :icon="addOutline"></ion-icon>
                     </ion-button>
-                  </div>
+                    </div>
                 </div>
 
                 <div class="balance-section">
@@ -61,12 +83,18 @@
                   <ion-text color="dark">
                     <h2 class="balance-amount">{{ currentBalance }}</h2>
                   </ion-text>
+                  
+                  <ion-text color="medium">
+                    <p class="balance-label" style="margin-top: 8px;">Gasto Estimado ({{ currentMonthName }})</p>
+                  </ion-text>
+                  <ion-text color="danger">
+                    <h2 class="balance-amount">{{ totalGastoEstimadoMes }}</h2>
+                  </ion-text>
                 </div>
               </div>
             </ion-card-header>
 
             <ion-card-content class="calendar-content">
-              <!-- Week Days -->
               <ion-grid class="calendar-grid">
                 <ion-row class="week-days-row">
                   <ion-col 
@@ -80,7 +108,6 @@
                   </ion-col>
                 </ion-row>
 
-                <!-- Calendar Days -->
                 <ion-row 
                   v-for="(week, weekIdx) in weeksArray" 
                   :key="weekIdx"
@@ -93,8 +120,10 @@
                     :class="{
                       'day-empty': !dayData.day,
                       'day-active': dayData.day,
-                      'day-highlight': dayData.day === '30'
+                      'day-today': dayData.isToday,
+                      'day-highlight': dayData.day && parseInt(dayData.day, 10) === selectedDay
                     }"
+                    @click="selectDay(dayData)"
                   >
                     <div v-if="dayData.day" class="day-content">
                       <ion-text color="dark" class="day-number">
@@ -121,13 +150,19 @@
           </ion-card>
         </div>
 
-        <!-- Right Sidebar - Events -->
-        <div class="events-sidebar">
+        <div class="events-sidebar" :class="{ 'is-visible': isSidebarVisible }">
           <div class="events-header">
             <ion-text color="light">
               <h2>Eventos</h2>
-              <p>30 Junio 2024</p>
+              <p>{{ selectedDayTitle }}</p>
             </ion-text>
+            <ion-button 
+              fill="clear" 
+              class="close-sidebar-btn ion-hide-lg-up" 
+              @click="isSidebarVisible = false"
+            >
+              <ion-icon :icon="closeOutline" color="light"></ion-icon>
+            </ion-button>
           </div>
 
           <div class="events-list-container">
@@ -147,7 +182,7 @@
                       <h3 class="event-time">{{ event.time }}</h3>
                     </ion-text>
                   </div>
-                  <ion-button fill="clear" class="event-action-btn">
+                  <ion-button fill="clear" class="event-action-btn" aria-label="Ver detalles">
                     <ion-icon :icon="peopleOutline" color="light"></ion-icon>
                   </ion-button>
                 </div>
@@ -166,6 +201,8 @@
             shape="round" 
             color="light" 
             class="add-event-btn"
+            @click="openEventoModal"
+            aria-label="Añadir evento"
           >
             <ion-icon :icon="addOutline" slot="icon-only"></ion-icon>
           </ion-button>
@@ -182,7 +219,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router'; // <-- Importación del Router
 import {
   IonPage,
   IonHeader,
@@ -204,149 +242,323 @@ import {
   IonLabel,
   IonText,
   IonMenuButton,
-  IonFooter
+  IonFooter,
+  modalController, 
+  toastController  
 } from '@ionic/vue';
 import {
   calendarOutline,
   calendarNumberOutline,
   personOutline,
   addOutline,
-  peopleOutline
+  peopleOutline,
+  chevronBackOutline,
+  chevronForwardOutline,
+  listOutline,    // <-- ¡NUEVA IMPORTACIÓN!
+  closeOutline    // <-- ¡NUEVA IMPORTACIÓN!
 } from 'ionicons/icons';
+import axios from 'axios';
+import EventoModal from '@/components/EventoModal.vue'; 
+import CategoriaModal from '@/components/CategoriaModal.vue'; 
 
-interface Event {
-  title: string;
-  color: string;
-  textColor?: string;
-}
+const router = useRouter(); // <-- Inicialización del Router
 
-interface DayData {
-  day: string;
-  events: Event[];
-}
-
-interface Category {
-  name: string;
-  color: string;
-}
-
-interface UpcomingEvent {
-  date: string;
-  time: string;
-  title: string;
-  subtitle: string;
-  description: string;
-  color: string;
-}
-
-const currentMonth = ref('JUNIO');
-const currentBalance = ref('$122.50');
-
-const weekDays = ['LUNES', 'MARTES', 'MIÉRCOLES', 'JUEVES', 'VIERNES', 'SÁBADO', 'DOMINGO'];
-
-const eventCategories: Category[] = [
-  { name: 'Reuniones', color: '#C4B5FD' },
-  { name: 'Proyecto personal', color: '#A78BFA' },
-  { name: 'Familiar', color: '#D1D5DB' },
-  { name: 'Mandados', color: '#1F2937' }
-];
-
-const upcomingEvents: UpcomingEvent[] = [
-  {
-    date: '30 Junio 2024',
-    time: '6:35 am',
-    title: 'Intención de plan de desarrollo para el...',
-    subtitle: 'Revistas de arquitectura',
-    description: 'Conversación de diseño arquitectónico con el comité del barrio',
-    color: '#C4B5FD'
-  },
-  {
-    date: '30 Junio 2024',
-    time: '2:05pm',
-    title: 'Reunión por Visitas extranjera con...',
-    subtitle: 'Junta cultural',
-    description: 'Bienvenida a extranjeros que visitan una feria en la ciudad...',
-    color: '#374151'
-  },
-  {
-    date: '30 Junio 2024',
-    time: '5:45pm',
-    title: 'Comprar para el día de las tres veces que...',
-    subtitle: 'Asunto personal',
-    description: 'Reunión del 4 de julio',
-    color: '#1F2937'
+// --- 1. CONFIGURACIÓN DE API ---
+const API_URL = 'http://127.0.0.1:8000/api';
+const authToken = localStorage.getItem('auth_token');
+const apiClient = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Authorization': `Bearer ${authToken}`,
+    'Accept': 'application/json'
   }
-];
+});
 
-const calendarDays: DayData[] = [
-  { day: '', events: [] },
-  { day: '', events: [] },
-  { day: '', events: [] },
-  { day: '', events: [] },
-  { day: '', events: [] },
-  { day: '01', events: [] },
-  { day: '02', events: [{ title: 'Día por visitar tiendas', color: '#C4B5FD' }] },
-  { day: '03', events: [{ title: 'Junta Familiar Sabatina', color: '#A78BFA' }] },
-  { day: '04', events: [{ title: 'Día por Recitar el himno', color: '#374151', textColor: '#fff' }] },
-  { day: '05', events: [] },
-  { day: '06', events: [{ title: 'Día Familiar mensual', color: '#C4B5FD' }] },
-  { day: '07', events: [] },
-  { day: '08', events: [] },
-  { day: '09', events: [] },
-  { day: '10', events: [{ title: 'Día por colaborar aviones', color: '#C4B5FD' }] },
-  { day: '11', events: [{ title: 'Día por liberar niños', color: '#374151', textColor: '#fff' }] },
-  { day: '12', events: [{ title: 'Día por Reunión Familiar', color: '#C4B5FD' }] },
-  { day: '13', events: [] },
-  { day: '14', events: [] },
-  { day: '15', events: [{ title: 'Dia por Hacer Reunion', color: '#C4B5FD' }] },
-  { day: '16', events: [{ title: 'Dia por Reunión Niños', color: '#C4B5FD' }] },
-  { day: '17', events: [{ title: 'Día por colaborar Jovenes', color: '#C4B5FD' }] },
-  { day: '18', events: [{ title: 'Día por liberar niños', color: '#374151', textColor: '#fff' }] },
-  { day: '19', events: [{ title: 'Dia por Visita Parental', color: '#C4B5FD' }] },
-  { day: '20', events: [
-    { title: 'Dia por Colaboracion', color: '#C4B5FD' }, 
-    { title: 'La Union Viena el amor', color: '#374151', textColor: '#fff' }
-  ]},
-  { day: '21', events: [{ title: 'Dia por Visitar abuelas', color: '#C4B5FD' }] },
-  { day: '22', events: [{ title: 'Venir Festival de niños', color: '#C4B5FD' }] },
-  { day: '23', events: [] },
-  { day: '24', events: [{ title: 'Dia colaborar al rancho', color: '#C4B5FD' }] },
-  { day: '25', events: [{ title: 'Dia por liberar niños', color: '#374151', textColor: '#fff' }] },
-  { day: '26', events: [] },
-  { day: '27', events: [] },
-  { day: '28', events: [{ title: 'La Union Viena el amor', color: '#374151', textColor: '#fff' }] },
-  { day: '29', events: [] },
-  { day: '30', events: [
-    { title: 'Juntas de Reunión de apoyos', color: '#C4B5FD' }, 
-    { title: 'Reunión Plan de soporte', color: '#A78BFA' }, 
-    { title: 'Día por liberar niños', color: '#374151', textColor: '#fff' }
-  ]}
-];
+// --- 2. INTERFACES DE DATOS ---
+interface Categoria { id: number; nombre: string; color: string; }
+interface Evento { id: number; titulo: string; descripcion: string; fecha: string; hora: string; gasto_estimado: string; categoria: Categoria; }
+interface CalendarEvent { title: string; color: string; textColor: string; }
+interface DayData { day: string; date: string; isToday: boolean; events: CalendarEvent[]; }
+interface UpcomingEvent { date: string; time: string; title: string; subtitle: string; description: string; color: string; }
 
-const weeksArray = computed(() => {
+// --- 3. ESTADO REACTIVO (REFS) ---
+const isLoading = ref(true);
+const currentDate = ref(new Date());
+const selectedDay = ref<number>(new Date().getDate());
+const user = ref<any>(null);
+const eventCategories = ref<Categoria[]>([]);
+const allEventsForMonth = ref<Evento[]>([]);
+const weekDays = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
+const searchQuery = ref('');
+
+// --- ¡NUEVO REF! ---
+// Comprueba el ancho de la ventana al cargar.
+// true si es desktop, false si es móvil.
+const isSidebarVisible = ref(window.innerWidth > 1024);
+
+// --- 4. FUNCIONES DE API ---
+const fetchUserData = async () => {
+  try {
+    const response = await apiClient.get('/user');
+    user.value = response.data;
+  } catch (error) {
+    console.error('Error al cargar datos del usuario:', error);
+  }
+};
+const fetchCategories = async () => {
+  try {
+    const response = await apiClient.get('/categorias');
+    eventCategories.value = response.data;
+  } catch (error) {
+    console.error('Error al cargar categorías:', error);
+  }
+};
+const fetchEventsForMonth = async () => {
+  isLoading.value = true;
+  try {
+    const mes = currentDate.value.getMonth() + 1;
+    const ano = currentDate.value.getFullYear();
+    const response = await apiClient.get('/eventos', {
+      params: { mes, ano }
+    });
+    allEventsForMonth.value = response.data;
+  } catch (error) {
+    console.error('Error al cargar eventos:', error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// --- 5. LÓGICA DE INTERACCIÓN ---
+onMounted(() => {
+  selectedDay.value = new Date().getDate();
+  fetchUserData();
+  fetchCategories();
+  fetchEventsForMonth();
+});
+const changeMonth = (direction: 'prev' | 'next') => {
+  const newDate = new Date(currentDate.value);
+  const newMonth = newDate.getMonth() + (direction === 'prev' ? -1 : 1);
+  newDate.setMonth(newMonth, 1);
+  currentDate.value = newDate;
+  
+  const today = new Date();
+  if (newDate.getMonth() === today.getMonth() && newDate.getFullYear() === today.getFullYear()) {
+    selectedDay.value = today.getDate();
+  } else {
+    selectedDay.value = 1;
+  }
+  fetchEventsForMonth();
+};
+const selectDay = (day: DayData) => {
+  if (day.day) {
+    selectedDay.value = parseInt(day.day, 10);
+    // --- ¡NUEVA LÓGICA! ---
+    // Si estamos en móvil, mostramos el sidebar al seleccionar un día
+    if (window.innerWidth <= 1024) {
+      isSidebarVisible.value = true;
+    }
+  }
+};
+
+// --- FUNCIONES DE MODALES ---
+const openEventoModal = async () => {
+  const date = new Date(currentDate.value);
+  date.setDate(selectedDay.value);
+  date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+  const selectedDateStr = date.toISOString().split('T')[0];
+
+  const modal = await modalController.create({
+    component: EventoModal,
+    componentProps: {
+      selectedDate: selectedDateStr,
+      categories: eventCategories.value,
+    },
+  });
+  await modal.present();
+  const { data, role } = await modal.onWillDismiss();
+
+  if (role === 'confirm' && data) {
+    allEventsForMonth.value.push(data);
+    const toast = await toastController.create({
+      message: 'Evento guardado.',
+      duration: 2000,
+      color: 'success'
+    });
+    await toast.present();
+  }
+};
+const openCategoriaModal = async () => {
+  const modal = await modalController.create({
+    component: CategoriaModal,
+    initialBreakpoint: 0.5,
+    breakpoints: [0, 0.5]
+  });
+  await modal.present();
+
+  const { data, role } = await modal.onWillDismiss();
+
+  if (role === 'confirm' && data) {
+    eventCategories.value.push(data);
+    const toast = await toastController.create({
+      message: 'Categoría creada.',
+      duration: 2000,
+      color: 'success'
+    });
+    await toast.present();
+  }
+};
+
+// --- FUNCIÓN DE NAVEGACIÓN ---
+const goToProfile = () => {
+  router.push('/perfil');
+};
+
+// --- 6. PROPIEDADES COMPUTADAS ---
+
+// (Propiedad filteredEvents para la búsqueda, sin cambios)
+const filteredEvents = computed<Evento[]>(() => {
+  const query = searchQuery.value.toLowerCase().trim();
+  if (!query) { return allEventsForMonth.value; }
+  return allEventsForMonth.value.filter(event => {
+    const titleMatch = event.titulo.toLowerCase().includes(query);
+    const categoryMatch = event.categoria?.nombre.toLowerCase().includes(query);
+    return titleMatch || categoryMatch;
+  });
+});
+
+// (Propiedad currentMonthName sin cambios)
+const currentMonthName = computed(() => {
+  return currentDate.value.toLocaleString('es-ES', { month: 'long' }).toUpperCase();
+});
+
+// (Propiedad currentBalance sin cambios)
+const currentBalance = computed(() => {
+  if (!user.value || !user.value.balance_actual) { return '$0.00'; }
+  return parseFloat(user.value.balance_actual).toLocaleString('es-ES', {
+    style: 'currency',
+    currency: 'USD'
+  });
+});
+
+// (Propiedad totalGastoEstimadoMes, ahora basada en filteredEvents, sin cambios)
+const totalGastoEstimadoMes = computed(() => {
+  const total = filteredEvents.value.reduce((sum, event) => {
+    return sum + parseFloat(event.gasto_estimado || '0');
+  }, 0);
+  return total.toLocaleString('es-ES', {
+    style: 'currency',
+    currency: 'USD'
+  });
+});
+
+// (Propiedad selectedDayTitle sin cambios)
+const selectedDayTitle = computed(() => {
+  const date = new Date(currentDate.value);
+  date.setDate(selectedDay.value);
+  return date.toLocaleString('es-ES', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+});
+
+// (Propiedad weeksArray, ahora basada en filteredEvents, sin cambios)
+const weeksArray = computed<DayData[][]>(() => {
   const weeks: DayData[][] = [];
-  for (let i = 0; i < calendarDays.length; i += 7) {
-    weeks.push(calendarDays.slice(i, i + 7));
+  const year = currentDate.value.getFullYear();
+  const month = currentDate.value.getMonth();
+  const firstDayOfMonth = new Date(year, month, 1);
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const startDayOfWeek = (firstDayOfMonth.getDay() + 6) % 7; 
+  let flatDays: DayData[] = [];
+  const today = new Date();
+  
+  for (let i = 0; i < startDayOfWeek; i++) {
+    flatDays.push({ day: '', date: '', isToday: false, events: [] });
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const fullDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const isToday = d === today.getDate() && 
+                    month === today.getMonth() && 
+                    year === today.getFullYear();
+    const eventsOnThisDay: CalendarEvent[] = filteredEvents.value
+      .filter(event => event.fecha === fullDate)
+      .map(event => ({
+        title: event.titulo,
+        color: event.categoria?.color || '#D1D5DB',
+        textColor: '#1F2937'
+      }));
+    flatDays.push({
+      day: String(d),
+      date: fullDate,
+      isToday: isToday,
+      events: eventsOnThisDay
+    });
+  }
+  let week: DayData[] = [];
+  flatDays.forEach(day => {
+    week.push(day);
+    if (week.length === 7) {
+      weeks.push(week);
+      week = [];
+    }
+  });
+  if (week.length > 0) {
+    while (week.length < 7) {
+      week.push({ day: '', date: '', isToday: false, events: [] });
+    }
+    weeks.push(week);
   }
   return weeks;
+});
+
+// (Propiedad upcomingEvents, ahora basada en filteredEvents, sin cambios)
+const upcomingEvents = computed<UpcomingEvent[]>(() => {
+  return filteredEvents.value
+    .filter(event => {
+      const eventDay = new Date(event.fecha + 'T12:00:00').getDate();
+      return eventDay === selectedDay.value;
+    })
+    .map(event => {
+      let time = '';
+      if (event.hora) {
+        const [h, m] = event.hora.split(':');
+        const d = new Date();
+        d.setHours(parseInt(h), parseInt(m));
+        time = d.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+      }
+      return {
+        date: selectedDayTitle.value,
+        time: time,
+        title: event.titulo,
+        subtitle: event.categoria?.nombre || 'Sin Categoría',
+        description: event.descripcion || '',
+        color: event.categoria?.color || '#D1D5DB'
+      };
+    });
 });
 </script>
 
 <style scoped>
+/* --- ¡¡¡ESTILOS RESPONSIVOS MODIFICADOS!!! --- */
 .calendar-page {
   --background: linear-gradient(135deg, #A5F3FC 0%, #67E8F9 100%);
 }
 
 .content-wrapper {
   display: flex;
+  flex-direction: row; /* Siempre será fila */
   height: 100%;
   padding: 16px;
   gap: 16px;
+  position: relative; /* Para el overlay */
+  overflow-x: hidden; /* Para ocultar el sidebar fuera de pantalla */
 }
 
 .main-calendar-area {
-  flex: 1;
-  overflow-y: auto;
+  flex: 1; /* Ocupa todo el espacio disponible */
+  min-width: 0; /* Permite que se encoja */
 }
 
 .calendar-card {
@@ -355,20 +567,19 @@ const weeksArray = computed(() => {
   border-radius: 24px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
-
 .calendar-header-content {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
 }
-
 .header-left {
   display: flex;
   align-items: center;
   gap: 24px;
   flex-wrap: wrap;
 }
-
 .month-title {
   font-size: 28px;
   font-weight: bold;
@@ -376,152 +587,88 @@ const weeksArray = computed(() => {
   letter-spacing: 4px;
   margin: 0;
 }
-
 .categories-container {
   display: flex;
   gap: 8px;
   align-items: center;
   flex-wrap: wrap;
 }
+.category-chip { height: 28px; font-size: 11px; }
+.category-dot { width: 12px; height: 12px; border-radius: 50%; margin-right: 4px; }
+.balance-section { text-align: right; flex-shrink: 0; }
+.balance-label { font-size: 12px; margin: 0 0 4px 0; }
+.balance-amount { font-size: 22px; font-weight: bold; margin: 0; }
+.calendar-content { background: white; border-radius: 16px; padding: 16px; }
+.calendar-grid { padding: 0; width: 100%; }
+.week-days-row { margin-bottom: 12px; }
+.week-day-col { text-align: center; padding: 8px 4px; }
+.week-day-col small { font-size: 12px; font-weight: 700; text-transform: uppercase; }
+.days-row { margin-bottom: 8px; }
+.day-col { min-height: 120px; padding: 8px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease-in-out; }
+.day-empty { background: transparent; cursor: default; }
+.day-active { background: #F9FAFB; border: 1px solid #E5E7EB; }
+.day-active:hover { background: #F3F4F6; }
+.day-today { background: #F0F9FF; border: 1px solid #7DD3FC; }
+.day-highlight { border: 2px solid #A78BFA !important; box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.3); background: #F3E8FF !important; }
+.day-content { height: 100%; display: flex; flex-direction: column; gap: 4px; }
+.day-number { font-size: 16px; font-weight: bold; margin-bottom: 6px; display: block; color: #1F2937; }
+.events-list { display: flex; flex-direction: column; gap: 3px; overflow: hidden; }
+.event-chip { height: auto; min-height: 24px; margin: 0; padding: 4px 8px; border-radius: 6px; }
+.event-label { font-size: 10px !important; line-height: 1.3; margin: 0; white-space: normal; font-weight: 500; }
 
-.category-chip {
-  height: 28px;
-  font-size: 11px;
-}
-
-.category-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  margin-right: 4px;
-}
-
-.balance-section {
-  text-align: right;
-}
-
-.balance-label {
-  font-size: 12px;
-  margin: 0 0 4px 0;
-}
-
-.balance-amount {
-  font-size: 22px;
-  font-weight: bold;
-  margin: 0;
-}
-
-.calendar-content {
-  background: white;
-  border-radius: 16px;
-  padding: 16px;
-}
-
-.calendar-grid {
-  padding: 0;
-  width: 100%;
-}
-
-.week-days-row {
-  margin-bottom: 12px;
-}
-
-.week-day-col {
-  text-align: center;
-  padding: 8px 4px;
-}
-
-.week-day-col small {
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.days-row {
-  margin-bottom: 8px;
-}
-
-.day-col {
-  min-height: 120px;
-  padding: 8px;
-  border-radius: 8px;
-}
-
-.day-empty {
-  background: transparent;
-}
-
-.day-active {
-  background: #F9FAFB;
-  border: 1px solid #E5E7EB;
-}
-
-.day-highlight {
-  border: 2px solid #A78BFA !important;
-  box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.3);
-  background: #F3E8FF !important;
-}
-
-.day-content {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.day-number {
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 6px;
-  display: block;
-  color: #1F2937;
-}
-
-.events-list {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.event-chip {
-  height: auto;
-  min-height: 24px;
-  margin: 0;
-  padding: 4px 8px;
-  border-radius: 6px;
-}
-
-.event-label {
-  font-size: 10px !important;
-  line-height: 1.3;
-  margin: 0;
-  white-space: normal;
-  font-weight: 500;
-}
+/* --- ¡NUEVOS ESTILOS PARA EL SIDEBAR RESPONSIVO! --- */
 
 .events-sidebar {
-  width: 320px;
   background: linear-gradient(135deg, #4babb8 0%, #22D3EE 100%);
   border-radius: 16px;
   padding: 20px;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
+  
+  /* --- LÓGICA MÓVIL (Por defecto) --- */
+  position: absolute; /* Se superpone a todo */
+  top: 16px; /* Ajusta al padding del content-wrapper */
+  bottom: 16px;
+  right: 16px;
+  width: 320px;
+  max-width: 90%; /* Máximo en pantallas muy chicas */
+  z-index: 1000; /* Por encima del calendario */
+  transform: translateX(110%); /* Oculto fuera de la pantalla */
+  transition: transform 0.3s ease-in-out;
+  box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+}
+
+.events-sidebar.is-visible {
+  transform: translateX(0); /* Lo hace visible */
+}
+
+/* --- LÓGICA DESKTOP (Pantallas grandes) --- */
+@media (min-width: 1024px) {
+  .events-sidebar {
+    position: relative; /* Vuelve a ser parte del layout */
+    top: auto;
+    bottom: auto;
+    right: auto;
+    width: 320px;
+    max-width: 320px;
+    flex-shrink: 0; /* Evita que se encoja */
+    transform: translateX(0); /* Siempre visible */
+    transition: none; /* Sin animación en desktop */
+    box-shadow: none;
+    height: 100%; /* Ocupa la altura del wrapper */
+  }
 }
 
 .events-header {
   margin-bottom: 20px;
+  display: flex; /* Para alinear el botón de cerrar */
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
-.events-header h2 {
-  font-size: 22px;
-  font-weight: bold;
-  margin: 0 0 4px 0;
-}
-
-.events-header p {
-  font-size: 14px;
-  margin: 0;
+/* Posiciona el botón de cerrar */
+.close-sidebar-btn {
+  margin: -10px -10px 0 0;
 }
 
 .events-list-container {
@@ -529,99 +676,23 @@ const weeksArray = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  overflow-y: auto;
 }
+.event-card { border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); margin: 0; }
+.event-card ion-card-content { padding: 12px; }
+.event-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.event-date { font-size: 11px; opacity: 0.9; margin: 0 0 4px 0; }
+.event-time { font-size: 18px; font-weight: bold; margin: 0; }
+.event-action-btn { --background: rgba(255, 255, 255, 0.2); --border-radius: 50%; margin: 0; height: 32px; width: 32px; }
+.event-title { font-size: 13px; font-weight: 600; margin: 0 0 4px 0; }
+.event-subtitle { font-size: 11px; opacity: 0.9; margin: 0 0 6px 0; }
+.event-description { font-size: 11px; opacity: 0.85; margin: 0; }
+.add-event-btn { margin-top: 16px; --background: white; --color: #22D3EE; font-size: 28px; height: 48px; flex-shrink: 0; }
 
-.event-card {
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  margin: 0;
-}
-
-.event-card ion-card-content {
-  padding: 12px;
-  
-}
-
-.event-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 8px;
-}
-
-.event-date {
-  font-size: 11px;
-  opacity: 0.9;
-  margin: 0 0 4px 0;
-}
-
-.event-time {
-  font-size: 18px;
-  font-weight: bold;
-  margin: 0;
-}
-
-.event-action-btn {
-  --background: rgba(255, 255, 255, 0.2);
-  --border-radius: 50%;
-  margin: 0;
-  height: 32px;
-  width: 32px;
-}
-
-.event-title {
-  font-size: 13px;
-  font-weight: 600;
-  margin: 0 0 4px 0;
-}
-
-.event-subtitle {
-  font-size: 11px;
-  opacity: 0.9;
-  margin: 0 0 6px 0;
-}
-
-.event-description {
-  font-size: 11px;
-  opacity: 0.85;
-  margin: 0;
-}
-
-.add-event-btn {
-  margin-top: 16px;
-  --background: white;
-  --color: #22D3EE;
-  font-size: 28px;
-  height: 48px;
-}
-
-ion-searchbar {
-  --background: white;
-  --border-radius: 8px;
-  padding: 4px 8px;
-}
-
-ion-chip {
-  --background: #E5E7EB;
-}
-
-ion-footer ion-toolbar {
-  text-align: center;
-}
-
-ion-footer p {
-  margin: 10px 0;
-  font-size: 0.875rem;
-  color: #666;
-}
-.card-content-md {
-    -webkit-padding-start: 16px;
-    padding-inline-start: 16px;
-    -webkit-padding-end: 16px;
-    padding-inline-end: 16px;
-    padding-top: 13px;
-    padding-bottom: 13px;
-    font-size: 0.875rem;
-    line-height: 1.5;
-}
+/* (Resto de estilos sin cambios) */
+ion-searchbar { --background: white; --border-radius: 8px; padding: 4px 8px; }
+ion-chip { --background: #E5E7EB; }
+ion-footer ion-toolbar { text-align: center; }
+ion-footer p { margin: 10px 0; font-size: 0.875rem; color: #666; }
+.card-content-md { -webkit-padding-start: 16px; padding-inline-start: 16px; -webkit-padding-end: 16px; padding-inline-end: 16px; padding-top: 13px; padding-bottom: 13px; font-size: 0.875rem; line-height: 1.5; }
 </style>

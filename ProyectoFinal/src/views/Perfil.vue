@@ -124,7 +124,6 @@ const selectedImage = ref<string | null>(null);
 const cropperRef = ref<any>(null);
 
 const API_URL = 'http://127.0.0.1:8000/api';
-
 onMounted(() => {
     loadUserData();
 });
