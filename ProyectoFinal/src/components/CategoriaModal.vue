@@ -5,7 +5,7 @@
         <ion-buttons slot="start">
           <ion-button color="medium" @click="handleCancel">Cancelar</ion-button>
         </ion-buttons>
-        <ion-title>Nueva Categoría</ion-title>
+        <ion-title>{{ isEditMode ? 'Editar' : 'Nueva' }} Categoría</ion-title>
         <ion-buttons slot="end">
           <ion-button :strong="true" @click="handleSave" :disabled="!categoria.nombre">Guardar</ion-button>
         </ion-buttons>
@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted, computed } from 'vue'; // <-- Añadido onMounted y computed
 import {
   IonPage,
   IonHeader,
@@ -71,13 +71,22 @@ import {
 } from '@ionic/vue';
 import axios from 'axios';
 
+// --- Interface y Props (NUEVO) ---
+interface Categoria {
+  id: number;
+  nombre: string;
+  color: string;
+}
+
+const props = defineProps({
+  categoriaToEdit: {
+    type: Object as () => Categoria,
+    default: null
+  }
+});
+
 // --- Configuración de API ---
-
-// --- ¡¡¡AQUÍ ESTÁ EL CAMBIO!!! ---
-// Se eliminó "/public" de la URL para que coincida con el Alias de Apache
-const API_URL = 'http://127.0.0.1:8000/api'; // <-- ¡URL NUEVA Y CORRECTA! 
-// --- FIN DEL CAMBIO ---
-
+const API_URL = 'http://127.0.0.1:8000/api';
 const authToken = localStorage.getItem('auth_token');
 const apiClient = axios.create({
   baseURL: API_URL,
@@ -90,34 +99,32 @@ const apiClient = axios.create({
 // --- Estado del Formulario ---
 const categoria = ref({
   nombre: '',
-  color: '#A78BFA' // Un color por defecto
+  color: '#A78BFA' // Color por defecto
+});
+
+// --- Lógica de Edición (NUEVO) ---
+const isEditMode = computed(() => !!props.categoriaToEdit);
+
+onMounted(() => {
+  if (isEditMode.value) {
+    // Si estamos editando, rellenamos el formulario
+    categoria.value.nombre = props.categoriaToEdit.nombre;
+    categoria.value.color = props.categoriaToEdit.color;
+  }
 });
 
 const colorPalette = ref([
-  '#A78BFA', // Morado (default)
-  '#FCA5A5', // Rojo
-  '#FDBA74', // Naranja
-  '#6EE7B7', // Verde
-  '#60A5FA', // Azul
-  '#F472B6', // Rosa
-  '#C4B5FD', // Morado claro
-  '#374151'  // Gris oscuro
+  '#A78BFA', '#FCA5A5', '#FDBA74', '#6EE7B7', '#60A5FA', '#F472B6', '#C4B5FD', '#374151'
 ]);
 
 // --- Métodos del Modal ---
-
 const handleCancel = () => {
   modalController.dismiss(null, 'cancel');
 };
 
 const handleSave = async () => {
   if (!categoria.value.nombre || !categoria.value.color) {
-    const toast = await toastController.create({
-      message: 'Debes ingresar un nombre y un color.',
-      duration: 2000,
-      color: 'warning'
-    });
-    await toast.present();
+    // (validación...)
     return;
   }
 
@@ -125,17 +132,20 @@ const handleSave = async () => {
   await loading.present();
 
   try {
-    // Llamar a la API para crear la categoría
-    const response = await apiClient.post('/categorias', categoria.value);
+    let response;
+    if (isEditMode.value) {
+      // --- LÓGICA DE ACTUALIZACIÓN (PUT) ---
+      response = await apiClient.put(`/categorias/${props.categoriaToEdit.id}`, categoria.value);
+    } else {
+      // --- LÓGICA DE CREACIÓN (POST) ---
+      response = await apiClient.post('/categorias', categoria.value);
+    }
     
     await loading.dismiss();
-    
-    // Devolver la nueva categoría a Calendario.vue
-    modalController.dismiss(response.data, 'confirm');
+    modalController.dismiss(response.data, 'confirm'); // Devuelve la categoría actualizada
 
   } catch (error: any) {
     await loading.dismiss();
-    
     const toast = await toastController.create({
       message: 'Error al guardar la categoría.',
       duration: 3000,
@@ -148,32 +158,9 @@ const handleSave = async () => {
 </script>
 
 <style scoped>
-ion-list {
-  background: transparent;
-}
-ion-item {
-  margin-bottom: 8px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-.color-palette {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  padding: 12px 20px;
-}
-.color-swatch {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: 3px solid transparent;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.color-swatch.selected {
-  border-color: #ffffff; /* Un borde blanco para el seleccionado */
-  transform: scale(1.1);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
+ion-list { background: transparent; }
+ion-item { margin-bottom: 8px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.color-palette { display: flex; flex-wrap: wrap; gap: 12px; padding: 12px 20px; }
+.color-swatch { width: 40px; height: 40px; border-radius: 50%; cursor: pointer; transition: all 0.2s ease; border: 3px solid transparent; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.color-swatch.selected { border-color: #ffffff; transform: scale(1.1); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
 </style>

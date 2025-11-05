@@ -5,7 +5,7 @@
         <ion-buttons slot="start">
           <ion-button color="medium" @click="handleCancel">Cancelar</ion-button>
         </ion-buttons>
-        <ion-title>Nuevo Evento</ion-title>
+        <ion-title>{{ isEditMode ? 'Editar' : 'Nuevo' }} Evento</ion-title>
         <ion-buttons slot="end">
           <ion-button :strong="true" @click="handleSave" :disabled="!eventoData.titulo">Guardar</ion-button>
         </ion-buttons>
@@ -89,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import {
   IonPage,
   IonHeader,
@@ -114,7 +114,23 @@ import {
 } from '@ionic/vue';
 import axios from 'axios';
 
-// --- Props ---
+// --- Interfaces y Props ---
+interface Categoria {
+  id: number;
+  nombre: string;
+  color: string;
+}
+interface Evento {
+  id: number;
+  titulo: string;
+  descripcion: string;
+  fecha: string;
+  hora: string;
+  gasto_estimado: string;
+  categoria_id: number | null; // Correcto
+  categoria?: Categoria;
+}
+
 const props = defineProps({
   selectedDate: {
     type: String,
@@ -124,21 +140,14 @@ const props = defineProps({
     type: Array as () => Categoria[],
     default: () => [],
   },
+  eventoToEdit: {
+    type: Object as () => Evento,
+    default: null
+  }
 });
 
-interface Categoria {
-  id: number;
-  nombre: string;
-  color: string;
-}
-
 // --- Configuración de API ---
-
-// --- ¡¡¡AQUÍ ESTÁ EL CAMBIO!!! ---
-// Se eliminó "/public" de la URL para que coincida con el Alias de Apache
-const API_URL = 'http://127.0.0.1:8000/api'; // <-- ¡URL NUEVA Y CORRECTA!
-// --- FIN DEL CAMBIO ---
-
+const API_URL = 'http://127.0.0.1:8000/api';
 const authToken = localStorage.getItem('auth_token');
 const apiClient = axios.create({
   baseURL: API_URL,
@@ -148,54 +157,74 @@ const apiClient = axios.create({
   }
 });
 
-// --- LÓGICA DE HORA (CORREGIDA) ---
-
-// Helper para formatear 'HH:mm' (hora local)
+// --- LÓGICA DE HORA Y ESTADO ---
 const getLocalTimeHHMM = (date: Date): string => {
   const hours = String(date.getHours()).padStart(2, '0');
   const minutes = String(date.getMinutes()).padStart(2, '0');
   return `${hours}:${minutes}`;
 };
 
-// 1. Tomamos la hora actual LOCAL (ej: 1:28 PM)
+// --- ¡NUEVA INTERFAZ PARA EL FORMULARIO! ---
+interface EventoFormData {
+  titulo: string;
+  fecha: string;
+  hora: string;
+  descripcion: string;
+  gasto_estimado: number | string | null;
+  categoria_id: number | null; // <-- Tipo explícito
+}
+
+// Valores por defecto (para modo "Crear")
 const now = new Date(); 
-
-// 2. v-model para el picker de FECHA.
-//    El formato correcto es 'YYYY-MM-DD'
-//    props.selectedDate ya viene en este formato.
 const fechaValue = ref(props.selectedDate);
+const horaValue = ref(getLocalTimeHHMM(now));
 
-// 3. v-model para el picker de HORA.
-//    El formato correcto es 'HH:mm'
-const horaValue = ref(getLocalTimeHHMM(now)); // <-- '13:28'
-
-// 4. Datos que se enviarán a la API
-const eventoData = ref({
+// --- ¡MODIFICADO! Se usa la interfaz EventoFormData ---
+const eventoData = ref<EventoFormData>({
   titulo: '',
-  fecha: fechaValue.value,
-  hora: horaValue.value,
+  fecha: props.selectedDate,
+  hora: getLocalTimeHHMM(now),
   descripcion: '',
   gasto_estimado: null,
-  categoria_id: null,
+  categoria_id: null, 
 });
 
-// --- FIN DE LÓGICA CORREGIDA ---
+// --- Lógica de Edición ---
+const isEditMode = computed(() => !!props.eventoToEdit);
 
+onMounted(() => {
+  if (isEditMode.value) {
+    eventoData.value.titulo = props.eventoToEdit.titulo;
+    eventoData.value.fecha = props.eventoToEdit.fecha;
+    eventoData.value.hora = props.eventoToEdit.hora.substring(0, 5);
+    eventoData.value.descripcion = props.eventoToEdit.descripcion;
+    eventoData.value.gasto_estimado = props.eventoToEdit.gasto_estimado as any;
+    
+    // ¡ESTA LÍNEA AHORA ES VÁLIDA!
+    eventoData.value.categoria_id = props.eventoToEdit.categoria_id; 
+    
+    fechaValue.value = props.eventoToEdit.fecha;
+    horaValue.value = props.eventoToEdit.hora.substring(0, 5);
+  }
+});
 
-// --- Watchers para sincronizar los pickers con los datos ---
+// --- Watchers ---
 watch(fechaValue, (newVal) => {
-  // Cuando el picker cambia, actualizamos los datos a enviar
-  eventoData.value.fecha = newVal;
+  if (newVal) {
+    eventoData.value.fecha = newVal.split('T')[0];
+  }
 });
 
 watch(horaValue, (newVal) => {
-  // Cuando el picker cambia, actualizamos los datos a enviar
-  eventoData.value.hora = newVal;
+  if (newVal && newVal.includes('T')) {
+    const date = new Date(newVal);
+    eventoData.value.hora = getLocalTimeHHMM(date);
+  } else if (newVal) {
+    eventoData.value.hora = newVal;
+  }
 });
 
-
 // --- Métodos del Modal ---
-
 const handleCancel = () => {
   modalController.dismiss(null, 'cancel');
 };
@@ -205,15 +234,18 @@ const handleSave = async () => {
   await loading.present();
 
   try {
-    // eventoData.value ahora tiene { fecha: '2025-11-03', hora: '13:28' }
-    const response = await apiClient.post('/eventos', eventoData.value);
+    let response;
+    if (isEditMode.value) {
+      response = await apiClient.put(`/eventos/${props.eventoToEdit.id}`, eventoData.value);
+    } else {
+      response = await apiClient.post('/eventos', eventoData.value);
+    }
     
     await loading.dismiss();
     modalController.dismiss(response.data, 'confirm');
 
   } catch (error: any) {
     await loading.dismiss();
-    
     const toast = await toastController.create({
       message: 'Error al guardar. Revisa los campos.',
       duration: 3000,
@@ -226,13 +258,6 @@ const handleSave = async () => {
 </script>
 
 <style scoped>
-/* Estilos para que los inputs se vean bien */
-ion-list {
-  background: transparent;
-}
-ion-item {
-  margin-bottom: 8px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
+ion-list { background: transparent; }
+ion-item { margin-bottom: 8px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 </style>
