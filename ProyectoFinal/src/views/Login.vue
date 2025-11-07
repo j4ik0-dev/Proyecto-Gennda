@@ -48,10 +48,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { 
-    IonPage, IonFooter, IonContent, IonLabel, IonInput, IonItem, 
-    IonButton, IonHeader, IonToolbar, toastController, IonIcon 
-} from '@ionic/vue';
+import { IonPage, IonFooter, IonContent, IonLabel, IonInput, IonItem, IonButton, IonHeader, IonToolbar, toastController, IonIcon } from '@ionic/vue';
 import axios from 'axios';
 import { logInOutline } from 'ionicons/icons';
 
