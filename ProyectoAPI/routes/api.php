@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\UsuariosController;
 use App\Http\Controllers\API\CategoriaController; // <-- Asegúrate que esté importado
 use App\Http\Controllers\API\EventoController;    // <-- Asegúrate que esté importado
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -17,6 +16,7 @@ use App\Http\Controllers\API\EventoController;    // <-- Asegúrate que esté im
 // Rutas públicas de Autenticación
 Route::post('/login', [UsuariosController::class, 'login']);
 Route::post('/register', [UsuariosController::class, 'register']);
+
 
 // Rutas protegidas (requieren token)
 Route::middleware('auth:sanctum')->group(function () {

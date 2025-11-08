@@ -7,11 +7,7 @@
         </ion-buttons>
         <ion-title>Finanzas</ion-title>
         <ion-buttons slot="end">
-          <ion-searchbar 
-            placeholder="Gastos del mes" 
-            :debounce="300"
-            style="max-width: 250px;"
-          ></ion-searchbar>
+          <ion-searchbar placeholder="Gastos del mes" :debounce="300" style="max-width: 250px;"></ion-searchbar>
           <ion-button fill="clear">
             <ion-icon :icon="notifications" color="primary"></ion-icon>
           </ion-button>
@@ -29,9 +25,12 @@
     </ion-header>
 
     <ion-content class="finance-page">
+
       <div class="content-wrapper">
         <!-- Main Finance Area -->
         <div class="main-finance-area">
+
+
           <!-- Balance Section -->
           <div class="balance-section">
             <ion-text color="light">
@@ -51,26 +50,29 @@
                   <h2 class="summary-amount">{{ monthlyIncome }}</h2>
                   <p class="summary-sublabel">{{ incomeDetails }}</p>
                 </ion-text>
+                <div class="income-input-group" style="margin-top:8px; display:flex; gap:8px; align-items:center;">
+                  <ion-input type="number" v-model="incomeInput" placeholder="Saldo Mensual"></ion-input>
+                  <ion-button size="small" color="light" @click="saveMonthlyIncome">Guardar</ion-button>
+                </div>
               </ion-card-content>
             </ion-card>
 
             <ion-card class="summary-card expense-card">
               <ion-card-content>
                 <ion-text color="light">
-                  <p class="summary-label">Gasto mensual</p>
+                  <p class="summary-label">Gasto</p>
                   <h2 class="summary-amount">{{ monthlyExpense }}</h2>
                   <p class="summary-sublabel">{{ expenseDetails }}</p>
                 </ion-text>
-                <div class="action-buttons">
-                  <ion-button size="small" color="light" class="action-btn">
-                    Añadir
-                  </ion-button>
-                  <ion-button size="small" color="light" class="action-btn">
-                    Descontar
-                  </ion-button>
+                <div class="income-input-group" style="margin-top:8px; display:flex; gap:8px; align-items:center;">
+                  <ion-input type="number" v-model="monthlyExpenseInput" placeholder="Gasto Mensual"></ion-input>
+                  <ion-button size="small" color="light" @click="saveMonthlyExpense">Guardar</ion-button>
                 </div>
               </ion-card-content>
             </ion-card>
+
+
+            
           </div>
 
           <!-- Transactions Grid -->
@@ -88,12 +90,7 @@
 
           <ion-grid class="transactions-grid">
             <ion-row>
-              <ion-col 
-                size="12" 
-                size-md="6" 
-                v-for="(transaction, idx) in transactions" 
-                :key="idx"
-              >
+              <ion-col size="12" size-md="6" v-for="(transaction, idx) in transactions" :key="idx">
                 <ion-card class="transaction-card" :class="transaction.className">
                   <ion-card-content>
                     <div class="transaction-content">
@@ -103,19 +100,9 @@
                           <p class="transaction-description">{{ transaction.description }}</p>
                         </ion-text>
                       </div>
-                      <ion-icon 
-                        :icon="lockClosed" 
-                        color="light" 
-                        class="transaction-icon"
-                      ></ion-icon>
+                      <ion-icon :icon="lockClosed" color="light" class="transaction-icon"></ion-icon>
                     </div>
-                    <ion-button 
-                      expand="block" 
-                      fill="clear" 
-                      color="light" 
-                      size="small"
-                      class="detail-btn"
-                    >
+                    <ion-button expand="block" fill="clear" color="light" size="small" class="detail-btn">
                       Ver detalle
                     </ion-button>
                   </ion-card-content>
@@ -137,19 +124,10 @@
           </div>
 
           <div class="history-list">
-            <ion-card 
-              v-for="(item, idx) in historyItems" 
-              :key="idx"
-              class="history-card"
-              :class="item.type"
-            >
+            <ion-card v-for="(item, idx) in historyItems" :key="idx" class="history-card" :class="item.type">
               <ion-card-content>
                 <div class="history-item-header">
-                  <ion-icon 
-                    :icon="lockClosed" 
-                    color="light"
-                    class="history-icon"
-                  ></ion-icon>
+                  <ion-icon :icon="lockClosed" color="light" class="history-icon"></ion-icon>
                   <ion-text color="light">
                     <h4 class="history-amount">{{ item.amount }}</h4>
                   </ion-text>
@@ -178,28 +156,13 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import {
-  IonFooter,
-  IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonButtons,
-  IonButton,
-  IonIcon,
-  IonSearchbar,
-  IonCard,
-  IonCardContent,
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonChip,
-  IonLabel,
-  IonText,
-  IonMenuButton
+  IonFooter,IonPage,IonHeader,IonToolbar,IonTitle,IonContent,IonButtons,
+  IonButton,IonIcon,IonSearchbar,IonCard,IonCardContent,IonGrid,
+  IonRow,IonCol,IonChip,IonLabel,IonText,IonMenuButton
 } from '@ionic/vue';
+import { IonInput } from '@ionic/vue';
 import {
   notifications,
   personOutline,
@@ -207,11 +170,74 @@ import {
   ellipsisHorizontal
 } from 'ionicons/icons';
 
-const currentBalance = ref('$ 122.50');
-const monthlyIncome = ref('$ 3,122.50');
-const monthlyExpense = ref('-$1625.8');
+const currentBalance = ref('$0.00');
+const monthlyIncome = ref('$0.00');
+const monthlyExpense = ref('$0.00');
+// numeric backing values
+const monthlyIncomeValue = ref(0);
+const monthlyExpenseValue = ref(0);
 const incomeDetails = ref('Desembolsos');
 const expenseDetails = ref('$0.00');
+
+
+// input y persistencia para ingreso mensual
+const incomeInput = ref('');
+const monthlyIncomeKey = 'monthlyIncomeValue';
+
+// input y persistencia para gasto mensual
+const monthlyExpenseInput = ref('');
+const monthlyExpenseKey = 'monthlyExpenseValue';
+
+const formatCurrency = (v) => {
+  const n = Number(v);
+  if (isNaN(n)) return '$0.00';
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+};
+
+const updateCurrentBalance = () => {
+  const diff = Number(monthlyIncomeValue.value) - Number(monthlyExpenseValue.value);
+  currentBalance.value = formatCurrency(diff);
+};
+
+const saveMonthlyIncome = () => {
+  const parsed = parseFloat(String(incomeInput.value));
+  if (isNaN(parsed)) return;
+  localStorage.setItem(monthlyIncomeKey, String(parsed));
+  monthlyIncomeValue.value = parsed;
+  monthlyIncome.value = formatCurrency(parsed);
+  updateCurrentBalance();
+  incomeInput.value = '';
+};
+
+const saveMonthlyExpense = () => {
+  const parsed = parseFloat(String(monthlyExpenseInput.value));
+  if (isNaN(parsed)) return;
+  localStorage.setItem(monthlyExpenseKey, String(parsed));
+  monthlyExpenseValue.value = parsed;
+  monthlyExpense.value = `-${formatCurrency(parsed)}`;
+  updateCurrentBalance();
+  monthlyExpenseInput.value = '';
+};
+
+onMounted(() => {
+  const saved = localStorage.getItem(monthlyIncomeKey);
+  if (saved !== null) {
+    const num = parseFloat(saved);
+    if (!isNaN(num)) {
+      monthlyIncomeValue.value = num;
+      monthlyIncome.value = formatCurrency(num);
+    }
+  }
+  const savedExp = localStorage.getItem(monthlyExpenseKey);
+  if (savedExp !== null) {
+    const num = parseFloat(savedExp);
+    if (!isNaN(num)) {
+      monthlyExpenseValue.value = num;
+      monthlyExpense.value = `-${formatCurrency(num)}`;
+    }
+  }
+  updateCurrentBalance();
+});
 
 const transactions = [
   {
@@ -269,34 +295,39 @@ const historyItems = [
 </script>
 
 <style scoped>
-
-
 /* ...existing code... */
 .content-wrapper {
   display: flex;
   height: 100%;
   padding: 20px;
   gap: 20px;
-  flex-wrap: wrap; /* Allow items to wrap to the next line */
+  flex-wrap: wrap;
+  /* Allow items to wrap to the next line */
 }
 
 /* Add media queries for responsiveness */
 @media (max-width: 768px) {
   .content-wrapper {
-    flex-direction: column; /* Stack items vertically on smaller screens */
+    flex-direction: column;
+    /* Stack items vertically on smaller screens */
   }
 }
 
 .main-finance-area {
-  flex: 1; /* Allow the main area to grow and take available space */
-  min-width: 300px; /* Ensure it doesn't shrink too much */
+  flex: 1;
+  /* Allow the main area to grow and take available space */
+  min-width: 300px;
+  /* Ensure it doesn't shrink too much */
   overflow-y: auto;
 }
 
 .history-sidebar {
-  width: 340px; /* Keep the sidebar width */
-  min-width: 200px; /* Ensure it doesn't shrink too much */
+  width: 340px;
+  /* Keep the sidebar width */
+  min-width: 200px;
+  /* Ensure it doesn't shrink too much */
 }
+
 /* ...existing code... */
 
 .main-finance-area {
@@ -484,23 +515,31 @@ const historyItems = [
   flex-direction: column;
   gap: 12px;
   margin-bottom: 20px;
-  overflow-x: auto; /* Enable horizontal scrolling for smaller screens */
+  overflow-x: auto;
+  /* Enable horizontal scrolling for smaller screens */
 }
 
 /* Add media queries for responsiveness */
 @media (max-width: 768px) {
   .history-list {
-    flex-direction: row; /* Display items in a row */
-    overflow-x: auto; /* Enable horizontal scrolling */
-    white-space: nowrap; /* Prevent items from wrapping */
+    flex-direction: row;
+    /* Display items in a row */
+    overflow-x: auto;
+    /* Enable horizontal scrolling */
+    white-space: nowrap;
+    /* Prevent items from wrapping */
   }
 
   .history-card {
-    flex: 0 0 auto; /* Prevent cards from shrinking */
-    width: 80%; /* Adjust card width as needed */
-    max-width: 200px; /* Set a maximum width */
+    flex: 0 0 auto;
+    /* Prevent cards from shrinking */
+    width: 80%;
+    /* Adjust card width as needed */
+    max-width: 200px;
+    /* Set a maximum width */
   }
 }
+
 /* ...existing code... */
 
 .history-card {
@@ -575,6 +614,7 @@ ion-grid {
 ion-col {
   padding: 8px;
 }
+
 ion-footer ion-toolbar {
   text-align: center;
 }

@@ -1,8 +1,8 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router';
-
 import { IonicVue } from '@ionic/vue';
+import axiosInstance from './api/config';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
@@ -34,9 +34,19 @@ import '@ionic/vue/css/palettes/dark.system.css';
 /* Theme variables */
 import './theme/variables.css';
 
-const app = createApp(App)
-  .use(IonicVue)
-  .use(router);
+const app = createApp(App);
+
+// Make axios instance available globally
+app.config.globalProperties.$axios = axiosInstance;
+
+app.use(IonicVue)
+   .use(router);
+
+// Initialize axios headers from local storage if token exists
+const token = localStorage.getItem('auth_token');
+if (token) {
+  axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+}
 
 router.isReady().then(() => {
   app.mount('#app');
