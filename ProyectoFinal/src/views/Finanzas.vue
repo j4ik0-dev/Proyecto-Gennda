@@ -139,11 +139,6 @@
               </ion-card-content>
             </ion-card>
           </div>
-
-          <!-- Advertisement Banner -->
-          <div class="ad-banner">
-            <img src="https://via.placeholder.com/300x200/FF1744/FFFFFF?text=TU+COMIDA+FAVORITA" alt="Publicidad" />
-          </div>
         </div>
       </div>
     </ion-content>
