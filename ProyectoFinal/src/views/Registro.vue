@@ -26,7 +26,7 @@
                     </ion-item>
                 </div>
                 <div class="button-stack">
-                    <ion-button @click="handleRegister" color="primary" expand="block">
+                    <ion-button @click="openTermsModal" color="primary" expand="block">
                         <ion-icon slot="start" :icon="personAddOutline"></ion-icon>
                         Registrarse
                     </ion-button>
@@ -37,6 +37,121 @@
                 </p>
 
             </div>
+
+
+            <!-- MODAL TERMINOS -->
+
+            <ion-modal :is-open="showTerms" @didDismiss="showTerms = false">
+                <ion-header>
+                    <ion-toolbar>
+                        <ion-title>Términos y Políticas</ion-title>
+                        <ion-buttons slot="end">
+                            <ion-button @click="closeTerms">Cerrar</ion-button>
+                        </ion-buttons>
+                    </ion-toolbar>
+                </ion-header>
+
+                <ion-content class="ion-padding">
+                    <!-- <ion-card> -->
+                     
+
+                        <ion-card-content class="ion-no-padding">
+                            <ion-accordion-group expand="inset">
+                                <ion-accordion id="accordion" value="politica-comercial">
+                                    <ion-item id="titleAcordion" slot="header" class="white-bg-item">
+                                        <ion-label class="bold-text">Política Comercial</ion-label>
+                                    </ion-item>
+                                    <div class="ion-padding" id="descripcionAcordion" slot="content">
+                                        <p><strong>Objeto:</strong> El servicio se presta bajo un esquema de suscripción
+                                            mensual.</p>
+                                        <p><strong>Precios:</strong> Los precios están sujetos a cambios con
+                                            notificación de 30 días.</p>
+                                    </div>
+                                </ion-accordion>
+
+                                <ion-accordion id="accordion" value="membresias">
+                                    <ion-item id="titleAcordion" slot="header" class="white-bg-item">
+                                        <ion-label class="bold-text">Membresías</ion-label>
+                                    </ion-item>
+                                    <div class="ion-padding" id="descripcionAcordion" slot="content">
+                                        <p><strong>Nivel Básico:</strong> Acceso limitado a funciones esenciales.</p>
+                                        <p><strong>Nivel Premium:</strong> Acceso completo, soporte 24/7 y descuentos
+                                            exclusivos.</p>
+                                    </div>
+                                </ion-accordion>
+
+                                <ion-accordion id="accordion" value="requisitos">
+                                    <ion-item id="titleAcordion" slot="header" class="white-bg-item">
+                                        <ion-label class="bold-text">Requisitos para obtener el servicio</ion-label>
+                                    </ion-item>
+                                    <div class="ion-padding" id="descripcionAcordion" slot="content">
+                                        <p>Ser mayor de 18 años, presentar una identificación oficial válida y aceptar
+                                            los términos de uso.</p>
+                                    </div>
+                                </ion-accordion>
+
+                                <ion-accordion id="accordion" value="mora">
+                                    <ion-item id="titleAcordion" slot="header" class="white-bg-item">
+                                        <ion-label class="bold-text">Cargo de mora</ion-label>
+                                    </ion-item>
+                                    <div class="ion-padding" id="descripcionAcordion" slot="content">
+                                        <p>Se aplicará un cargo del 10% sobre el saldo pendiente si el pago no se
+                                            realiza antes de la fecha de corte.</p>
+                                    </div>
+                                </ion-accordion>
+
+                                <ion-accordion id="accordion" value="privacidad">
+                                    <ion-item id="titleAcordion" slot="header" class="white-bg-item">
+                                        <ion-label class="bold-text">Política de privacidad</ion-label>
+                                    </ion-item>
+                                    <div class="ion-padding" id="descripcionAcordion" slot="content">
+                                        <p>Tus datos se utilizan exclusivamente para la gestión de la cuenta y el envío
+                                            de notificaciones. No se comparten con terceros.</p>
+                                    </div>
+                                </ion-accordion>
+
+                                <ion-accordion id="accordion" value="cobertura">
+                                    <ion-item id="titleAcordion" slot="header" class="white-bg-item">
+                                        <ion-label class="bold-text">Cobertura</ion-label>
+                                    </ion-item>
+                                    <div class="ion-padding" id="descripcionAcordion" slot="content">
+                                        <p>El servicio está disponible en Ciudad A, Ciudad B y áreas metropolitanas
+                                            colindantes. Verifica tu código postal.</p>
+                                    </div>
+                                </ion-accordion>
+                            </ion-accordion-group>
+
+                            <div id="accordion" class="checkbox-container ion-padding">
+                                <ion-item id="titleAcordion" lines="none" class="white-bg-item">
+                                    <ion-checkbox slot="end" v-model="readTerms"></ion-checkbox>
+                                    <ion-label class="bold-text">
+                                        <span class="required-asterisk">*</span>He leído los términos y condiciones
+                                    </ion-label>
+                                </ion-item>
+
+                                <ion-item id="titleAcordion" lines="none" class="white-bg-item">
+                                    <ion-checkbox slot="end" v-model="acceptTerms"></ion-checkbox>
+                                    <ion-label class="bold-text">
+                                        <span class="required-asterisk">*</span>Acepto términos y condiciones
+                                    </ion-label>
+                                </ion-item>
+                            </div>
+                      
+                            
+                        </ion-card-content>
+                        
+                        <ion-button id="button-termino" expand="block" color="primary" :disabled="!(acceptTerms && readTerms)" @click="confirmRegister">
+                            Aceptar y continuar
+                        </ion-button>
+
+                    <!-- </ion-card> -->
+                </ion-content>
+            
+            </ion-modal>
+
+
+            <!-- FIN MODAL -->
+
         </ion-content>
         <ion-footer>
             <ion-toolbar>
@@ -49,10 +164,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { 
-    IonPage, IonFooter, IonContent, IonLabel, IonInput, IonItem, 
-    IonButton, IonHeader, IonToolbar, toastController, IonIcon 
+import {
+    IonPage, IonFooter, IonContent, IonLabel, IonInput, IonItem,
+    IonButton, IonHeader, IonToolbar, toastController, IonIcon, IonModal, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonAccordionGroup, IonAccordion, IonButtons, IonTitle, IonCheckbox
 } from '@ionic/vue';
+
 import axios from 'axios';
 import { personAddOutline } from 'ionicons/icons';
 
@@ -76,6 +192,43 @@ const presentToast = async (message: string, color: 'success' | 'danger') => {
     await toast.present();
 };
 
+// ----------------CODIGO DEL  MODAL-------------
+
+const showTerms = ref<boolean>(false);
+const readTerms = ref<boolean>(false);
+const acceptTerms = ref<boolean>(false);
+
+// Confirma aceptación y continúa con el registro
+const confirmRegister = async () => {
+    console.log('readTerms:', readTerms.value, 'acceptTerms:', acceptTerms.value);
+    if (!readTerms.value || !acceptTerms.value) {
+        presentToast('Debes aceptar los términos y condiciones', 'danger');
+        return;
+    }
+    showTerms.value = false;
+    await handleRegister();
+};
+
+
+// Abre el modal
+const openTermsModal = () => {
+    showTerms.value = true;
+};
+
+// Cierra el modal
+const closeTerms = () => {
+    showTerms.value = false;
+};
+
+
+
+
+
+// ----------------FIN DEL CODIGO DEL MODAL------------------
+
+
+
+
 const handleRegister = async () => {
     if (formData.value.password !== formData.value.password_confirmation) {
         presentToast('Las contraseñas no coinciden', 'danger');
@@ -94,7 +247,7 @@ const handleRegister = async () => {
             const errors = error.response.data.errors;
             let errorMessage = 'Error de validación:';
             for (const key in errors) {
-                errorMessage += `\n- ${errors[key][0]}`; 
+                errorMessage += `\n- ${errors[key][0]}`;
             }
             presentToast(errorMessage.replace(/\n/g, '<br>'), 'danger');
         } else {
@@ -123,6 +276,7 @@ const handleRegister = async () => {
     margin-top: 10px;
     margin-bottom: 20px;
 }
+
 .logo-container .logo {
     width: 150px;
     height: auto;
@@ -153,7 +307,7 @@ const handleRegister = async () => {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    margin-top: 20px; 
+    margin-top: 20px;
 }
 
 .register-text {
@@ -161,11 +315,13 @@ const handleRegister = async () => {
     font-size: 0.95rem;
     text-align: center;
 }
+
 .register-text a {
     color: var(--ion-color-primary, #3880ff);
     text-decoration: none;
     font-weight: 600;
 }
+
 .register-text a:hover {
     text-decoration: underline;
 }
@@ -179,4 +335,61 @@ ion-footer p {
     font-size: 0.875rem;
     color: #666;
 }
+
+
+
+
+/* estilos del modal de terminos y condiciones */
+
+#button-termino {
+    margin: 0 16px 16px 16px;
+}   
+ion-content {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+/* quitar el scroll */
+ion-modal {
+    --height: 80%;
+    --width: 40%;
+}
+
+/* ion-card transparentes */
+/* ion-card {
+    --height: 30%;
+    --width: 50%;
+} */
+
+#accordion {
+    background: transparent;
+}
+#descripcionAcordion {
+    background: transparent;
+}
+#titleAcordion {
+    font-weight: bold;
+    --background: transparent;
+}
+
+/* elminar sombraas y bordes de los accordions */
+/* Dejar solo border-bottom en los headers de los accordions */
+ion-accordion,
+ion-accordion-group {
+  --background: transparent !important;
+  --box-shadow: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+/* Contenido sin bordes ni sombras, con padding */
+ion-accordion div[slot="content"],
+ion-accordion ion-card-content {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 12px 16px;
+}
+
+
 </style>
