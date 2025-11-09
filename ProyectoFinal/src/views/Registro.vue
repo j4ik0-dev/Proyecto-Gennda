@@ -16,6 +16,22 @@
                         <ion-label position="stacked">Correo</ion-label>
                         <ion-input type="email" v-model="formData.email"></ion-input>
                     </ion-item>
+
+                    <!-- ================================== -->
+                    <!-- == CAMBIO: CAMPO DUI AÑADIDO == -->
+                    <!-- ================================== -->
+                    <ion-item class="info-field-editable">
+                        <ion-label position="stacked">DUI</ion-label>
+                        <ion-input 
+                            type="text" 
+                            v-model="formData.dui"
+                            placeholder="00000000-0"
+                            :maxlength="10"
+                            @ionInput="formatDui"
+                        ></ion-input>
+                    </ion-item>
+                    <!-- ================================== -->
+
                     <ion-item class="info-field-editable">
                         <ion-label position="stacked">Contraseña</ion-label>
                         <ion-input type="password" v-model="formData.password"></ion-input>
@@ -42,6 +58,8 @@
                 <p>© 2025 Gennda - Todos los derechos reservados</p>
             </ion-toolbar>
         </ion-footer>
+
+        <!-- MODAL DE TÉRMINOS Y CONDICIONES (Sin cambios) -->
         <ion-modal :is-open="showTerms" @didDismiss="showTerms = false">
             <ion-header>
                 <ion-toolbar>
@@ -53,6 +71,7 @@
             </ion-header>
             <ion-content class="ion-padding modal-content">
                 <ion-accordion-group expand="inset">
+                    <!-- ... (Tu contenido de acordeón va aquí) ... -->
                     <ion-accordion id="accordion" value="politica-comercial">
                         <ion-item id="titleAcordion" slot="header" class="white-bg-item">
                             <ion-label class="bold-text">Política Comercial</ion-label>
@@ -141,19 +160,24 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import {IonPage, IonFooter, IonContent, IonLabel, IonInput, IonItem,IonButton, IonHeader, IonToolbar, toastController, IonIcon, IonModal, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonAccordionGroup, IonAccordion, IonButtons, IonTitle, IonCheckbox} from '@ionic/vue';
+import {
+    IonPage, IonFooter, IonContent, IonLabel, IonInput, IonItem, IonButton, IonHeader, IonToolbar, toastController, IonIcon, IonModal, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonAccordionGroup, IonAccordion, IonButtons, IonTitle, IonCheckbox
+} from '@ionic/vue';
 import axios from 'axios';
 import { personAddOutline } from 'ionicons/icons';
 
+// --- CAMBIO: AÑADIDO 'dui' AL FORMDATA ---
 const formData = ref({
     nombre: '',
     email: '',
+    dui: '', // <-- AÑADIDO
     password: '',
     password_confirmation: ''
 });
 
 const router = useRouter();
-const API_URL = 'http://127.0.0.1:8000/api';
+// Asegúrate de que esta URL sea la correcta (la de tu VM o túnel)
+const API_URL = 'http://127.0.0.1:8000/api'; 
 
 const presentToast = async (message: string, color: 'success' | 'danger') => {
     const toast = await toastController.create({
@@ -165,13 +189,28 @@ const presentToast = async (message: string, color: 'success' | 'danger') => {
     await toast.present();
 };
 
+// --- CAMBIO: FUNCIÓN PARA FORMATEAR EL DUI ---
+const formatDui = (event: Event) => {
+    const input = event.target as HTMLIonInputElement;
+    let value = (input.value as string).replace(/[^0-9]/g, ''); // Solo números
+    
+    if (value.length > 8) {
+        // Inserta el guion en la posición 8 (00000000-0)
+        value = value.slice(0, 8) + '-' + value.slice(8, 9);
+    }
+    
+    formData.value.dui = value;
+    // Forzamos la actualización del valor en el input por si V-model no reacciona
+    (event.target as HTMLIonInputElement).value = formData.value.dui;
+};
 
+
+// Lógica del modal (sin cambios)
 const showTerms = ref<boolean>(false);
 const readTerms = ref<boolean>(false);
 const acceptTerms = ref<boolean>(false);
 
 const confirmRegister = async () => {
-    console.log('readTerms:', readTerms.value, 'acceptTerms:', acceptTerms.value);
     if (!readTerms.value || !acceptTerms.value) {
         presentToast('Debes aceptar los términos y condiciones', 'danger');
         return;
@@ -179,7 +218,6 @@ const confirmRegister = async () => {
     showTerms.value = false;
     await handleRegister();
 };
-
 
 const openTermsModal = () => {
     showTerms.value = true;
@@ -189,13 +227,14 @@ const closeTerms = () => {
     showTerms.value = false;
 };
 
-
+// handleRegister (sin cambios, ya que formData.value se envía completo)
 const handleRegister = async () => {
     if (formData.value.password !== formData.value.password_confirmation) {
         presentToast('Las contraseñas no coinciden', 'danger');
         return;
     }
     try {
+        // formData.value AHORA INCLUYE EL 'dui' AUTOMÁTICAMENTE
         const response = await axios.post(`${API_URL}/register`, formData.value);
         if (response.status === 201) {
             console.log('Registro exitoso:', response.data);
@@ -207,8 +246,18 @@ const handleRegister = async () => {
         if (error.response && error.response.status === 422) {
             const errors = error.response.data.errors;
             let errorMessage = 'Error de validación:';
-            for (const key in errors) {
-                errorMessage += `\n- ${errors[key][0]}`;
+            // Mostramos los errores de forma más específica
+            if (errors.nombre) {
+                errorMessage += `\n- ${errors.nombre[0]}`;
+            }
+            if (errors.email) {
+                errorMessage += `\n- ${errors.email[0]}`;
+            }
+            if (errors.dui) { // <-- AÑADIDO MANEJO DE ERROR DE DUI
+                errorMessage += `\n- ${errors.dui[0]}`;
+            }
+            if (errors.password) {
+                errorMessage += `\n- ${errors.password[0]}`;
             }
             presentToast(errorMessage.replace(/\n/g, '<br>'), 'danger');
         } else {
@@ -219,6 +268,7 @@ const handleRegister = async () => {
 </script>
 
 <style scoped>
+/* Tus estilos de .profile-card y modal (sin cambios) */
 .profile-card {
     display: flex;
     flex-direction: column;
@@ -295,6 +345,8 @@ ion-footer p {
     font-size: 0.875rem;
     color: #666;
 }
+
+/* Tus estilos de modal */
 ion-modal {
     --height: 90%;
     --width: 95%;

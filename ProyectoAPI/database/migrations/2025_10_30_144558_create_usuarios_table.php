@@ -13,13 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('usuarios', function (Blueprint $table) {
+        // Usamos 'usuarios' como me has indicado
+        Schema::create('usuarios', function (Blueprint $table) { 
             $table->id();
             $table->string('nombre');
+            $table->string('dui', 10)->unique(); // El nuevo campo DUI
             $table->string('email')->unique();
             $table->string('password');
             $table->timestamps();
-            $table->decimal('balance_actual', 10, 2)->nullable()->default(0.00)->after('foto_path');
         });
     }
 

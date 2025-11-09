@@ -15,16 +15,31 @@ class UsuariosController extends Controller
         $validator = Validator::make($request->all(), [
             'nombre' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:usuarios',
+            
+            // --- CAMBIO AQUÍ: VALIDACIÓN DE DUI AÑADIDA ---
+            'dui' => [
+                'required',
+                'string',
+                'max:10',
+                'unique:usuarios',
+                'regex:/^[0-9]{8}-[0-9]{1}$/' // Valida el formato 00000000-0
+            ],
+            // --- FIN DEL CAMBIO ---
+
             'password' => 'required|string|min:8|confirmed',
         ]);
+
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
+
         $usuario = Usuarios::create([
             'nombre' => $request->nombre,
             'email' => $request->email,
+            'dui' => $request->dui, // <-- CAMBIO AQUÍ: DUI AÑADIDO
             'password' => Hash::make($request->password),
         ]);
+
         $token = $usuario->createToken('auth_token')->plainTextToken;
         return response()->json([
             'message' => '¡Usuario registrado exitosamente!',
@@ -33,6 +48,7 @@ class UsuariosController extends Controller
             'user' => $usuario
         ], 201);
     }
+
     public function login(Request $request)
     {
         $request->validate([
@@ -55,6 +71,7 @@ class UsuariosController extends Controller
             'user' => $usuario
         ], 200);
     }
+    
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
@@ -63,6 +80,7 @@ class UsuariosController extends Controller
             'message' => 'Sesión cerrada exitosamente.'
         ], 200);
     }
+    
     public function index()
     {
         
@@ -84,6 +102,7 @@ class UsuariosController extends Controller
     public function destroy($id)
     {
     }
+
     public function updatePhoto(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -104,28 +123,29 @@ class UsuariosController extends Controller
         $user->save();
         return response()->json($user);
     }
+
     public function updateProfile(Request $request)
     {
-    $user = $request->user();
-    $validator = Validator::make($request->all(), [
-        'nombre' => 'sometimes|required|string|max:255', // actualizaciones parciales
-        'email' => [
-            'sometimes', 
-            'required',
-            'string',
-            'email',
-            'max:255',
-            Rule::unique('usuarios')->ignore($user->id),
-        ],
-        
-        'balance_actual' => 'sometimes|nullable|numeric|min:0'
-    ]);
+        $user = $request->user();
+        $validator = Validator::make($request->all(), [
+            'nombre' => 'sometimes|required|string|max:255', // actualizaciones parciales
+            'email' => [
+                'sometimes', 
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('usuarios')->ignore($user->id),
+            ],
+            
+            'balance_actual' => 'sometimes|nullable|numeric|min:0'
+        ]);
 
-    if ($validator->fails()) {
-        return response()->json(['errors' => $validator->errors()], 422);
-    }
-    $user->update($validator->validated());
-    return response()->json($user);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+        $user->update($validator->validated());
+        return response()->json($user);
     }
 
 }
