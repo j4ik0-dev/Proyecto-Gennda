@@ -84,27 +84,7 @@
                             </ion-accordion>
                         </ion-accordion-group>
 
-                        <div class="checkbox-container ion-padding">
-                            <ion-item lines="none" class="white-bg-item">
-                                <ion-checkbox 
-                                    slot="end" 
-                                    v-model="readTerms"
-                                ></ion-checkbox>
-                                <ion-label class="bold-text">
-                                    <span class="required-asterisk">*</span>He leído los términos y condiciones
-                                </ion-label>
-                            </ion-item>
-
-                            <ion-item lines="none" class="white-bg-item">
-                                <ion-checkbox 
-                                    slot="end" 
-                                    v-model="acceptTerms"
-                                ></ion-checkbox>
-                                <ion-label class="bold-text">
-                                    <span class="required-asterisk">*</span>Acepto términos y condiciones
-                                </ion-label>
-                            </ion-item>
-                        </div>
+                        
                     </ion-card-content>
                 </ion-card>
             </div>
