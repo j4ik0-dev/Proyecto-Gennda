@@ -1,4 +1,3 @@
-
 <template>
     <ion-page>
         <ion-header>
@@ -48,16 +47,82 @@
                 <div class="section-container">
                     <h2 class="section-title">Categorías de Ayuda</h2>
                     <div class="categories-grid">
+                        <!-- Card Finanzas -->
                         <div 
-                            v-for="(categoria, index) in categorias" 
-                            :key="index"
                             class="category-card"
+                            :class="{ 'category-expanded': isCategoryExpanded(0) }"
+                            @click.stop="toggleCategory(0)"
                         >
-                            <div class="category-icon" :style="{ backgroundColor: categoria.color }">
-                                <ion-icon :icon="categoria.icon" size="large"></ion-icon>
+                            <div class="category-icon" :style="{ backgroundColor: categorias[0].color }">
+                                <ion-icon :icon="categorias[0].icon" size="large"></ion-icon>
                             </div>
-                            <h3>{{ categoria.titulo }}</h3>
-                            <p>{{ categoria.descripcion }}</p>
+                            <h3>{{ categorias[0].titulo }}</h3>
+                            <p class="category-description">{{ categorias[0].descripcion }}</p>
+                            
+                            <ion-icon 
+                                :icon="isCategoryExpanded(0) ? chevronUpOutline : chevronDownOutline"
+                                class="expand-icon"
+                            ></ion-icon>
+                            
+                            <div v-if="isCategoryExpanded(0)" class="category-help-content">
+                                <ul>
+                                    <li v-for="(item, idx) in categorias[0].ayuda" :key="idx">
+                                        {{ item }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Card Calendario -->
+                        <div 
+                            class="category-card"
+                            :class="{ 'category-expanded': isCategoryExpanded(1) }"
+                            @click.stop="toggleCategory(1)"
+                        >
+                            <div class="category-icon" :style="{ backgroundColor: categorias[1].color }">
+                                <ion-icon :icon="categorias[1].icon" size="large"></ion-icon>
+                            </div>
+                            <h3>{{ categorias[1].titulo }}</h3>
+                            <p class="category-description">{{ categorias[1].descripcion }}</p>
+                            
+                            <ion-icon 
+                                :icon="isCategoryExpanded(1) ? chevronUpOutline : chevronDownOutline"
+                                class="expand-icon"
+                            ></ion-icon>
+                            
+                            <div v-if="isCategoryExpanded(1)" class="category-help-content">
+                                <ul>
+                                    <li v-for="(item, idx) in categorias[1].ayuda" :key="idx">
+                                        {{ item }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Card Perfil -->
+                        <div 
+                            class="category-card"
+                            :class="{ 'category-expanded': isCategoryExpanded(2) }"
+                            @click.stop="toggleCategory(2)"
+                        >
+                            <div class="category-icon" :style="{ backgroundColor: categorias[2].color }">
+                                <ion-icon :icon="categorias[2].icon" size="large"></ion-icon>
+                            </div>
+                            <h3>{{ categorias[2].titulo }}</h3>
+                            <p class="category-description">{{ categorias[2].descripcion }}</p>
+                            
+                            <ion-icon 
+                                :icon="isCategoryExpanded(2) ? chevronUpOutline : chevronDownOutline"
+                                class="expand-icon"
+                            ></ion-icon>
+                            
+                            <div v-if="isCategoryExpanded(2)" class="category-help-content">
+                                <ul>
+                                    <li v-for="(item, idx) in categorias[2].ayuda" :key="idx">
+                                        {{ item }}
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -78,7 +143,7 @@
                                 <ion-icon :icon="callOutline" size="large"></ion-icon>
                                 <div>
                                     <h4>Teléfono</h4>
-                                    <p>+503 1234-5678</p>
+                                    <p>+503 7467-7407</p>
                                 </div>
                             </div>
                             <div class="contact-item">
@@ -115,6 +180,19 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Botón flotante de WhatsApp -->
+            <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="whatsapp-fab-container">
+                <ion-fab-button 
+                    :href="getWhatsAppUrl()"
+                    target="_blank"
+                    @click="manejarClicBoton"
+                    color="success"
+                    class="whatsapp-fab"
+                >
+                    <ion-icon :icon="logoWhatsapp"></ion-icon>
+                </ion-fab-button>
+            </ion-fab>
         </ion-content>
         <ion-footer>
             <ion-toolbar>
@@ -139,21 +217,24 @@ import {
     IonIcon,
     IonButton,
     IonItem,
-    IonLabel
+    IonLabel,
+    IonFab,
+    IonFabButton
 } from '@ionic/vue';
 import {
     chevronForwardOutline,
     chevronDownOutline,
+    chevronUpOutline,
     walletOutline,
     calendarOutline,
     personOutline,
-    settingsOutline,
     mailOutline,
     callOutline,
     timeOutline,
     documentTextOutline,
     videocamOutline,
-    bookOutline
+    bookOutline,
+    logoWhatsapp
 } from 'ionicons/icons';
 
 interface FAQ {
@@ -162,65 +243,128 @@ interface FAQ {
     expanded: boolean;
 }
 
+interface Categoria {
+    titulo: string;
+    descripcion: string;
+    icon: string;
+    color: string;
+    expanded: boolean;
+    ayuda: string[];
+}
+
+// --- Configuración de WhatsApp ---
+const numeroWhatsApp = '50374677407';
+const mensajePredeterminado = 'Hola, estoy en la aplicación Gennda y necesito ayuda con soporte.';
+
+const getWhatsAppUrl = () => {
+    const mensajeCodificado = encodeURIComponent(mensajePredeterminado);
+    return `https://wa.me/${numeroWhatsApp}?text=${mensajeCodificado}`;
+};
+
+const manejarClicBoton = () => {
+    console.log('Botón de WhatsApp presionado. Abriendo chat...');
+};
+
 const searchQuery = ref('');
 
 const faqs = ref<FAQ[]>([
     {
         pregunta: '¿Cómo puedo registrar un nuevo gasto en Finanzas?',
-        respuesta: 'Dirígete a la sección de Finanzas desde el menú lateral, luego presiona el botón "Añadir" y completa los detalles del gasto como monto, categoría y descripción.',
+        respuesta: 'Los gastos se registran automáticamente desde el calendario. Crea un evento y añade un "gasto estimado" para verlo reflejado en tu sección de Finanzas.',
         expanded: false
     },
     {
         pregunta: '¿Cómo funciona el calendario de eventos?',
-        respuesta: 'El calendario te permite visualizar todos tus eventos organizados por fecha. Puedes agregar eventos familiares, mandatos, y otros recordatorios importantes. Los eventos se muestran con diferentes colores según su categoría.',
+        respuesta: 'El calendario te permite visualizar todos tus eventos organizados por fecha. Puedes agregar eventos familiares, crear categorías personalizadas con colores, y establecer gastos estimados. Los eventos se muestran con diferentes colores según su categoría.',
         expanded: false
     },
     {
-        pregunta: '¿Puedo ver el historial de todas mis transacciones?',
-        respuesta: 'Sí, en la sección "Historial de Finanzas" puedes ver todas tus transacciones pasadas con detalles completos incluyendo fecha, usuario, monto y descripción.',
+        pregunta: '¿Cómo actualizo mi balance actual?',
+        respuesta: 'En la sección de Finanzas, encontrarás un campo para actualizar tu balance actual. Ingresa el monto y presiona "Guardar" para actualizarlo.',
+        expanded: false
+    },
+    {
+        pregunta: '¿Qué es la proyección de fin de mes?',
+        respuesta: 'La proyección calcula tu balance estimado al final del mes basándose en tu ingreso mensual menos los gastos planificados de tus eventos. Te ayuda a visualizar si terminarás con superávit o déficit.',
         expanded: false
     },
     {
         pregunta: '¿Cómo actualizo mi información de perfil?',
-        respuesta: 'Accede a "Mi Perfil" desde el menú lateral. Allí podrás editar tu información personal, cambiar tu foto de perfil y actualizar tus preferencias.',
+        respuesta: 'Accede a "Mi Perfil" desde el menú lateral. Presiona "Editar Perfil" para modificar tu nombre y correo electrónico. También puedes cambiar tu foto de perfil tocando sobre ella.',
         expanded: false
     },
     {
-        pregunta: '¿La aplicación funciona sin conexión a internet?',
-        respuesta: 'Algunas funciones están disponibles sin conexión, pero se requiere internet para sincronizar datos y acceder a funciones en tiempo real.',
+        pregunta: '¿Puedo ver el historial de mis gastos pasados?',
+        respuesta: 'Sí, en la sección "Historial de Finanzas" puedes ver todos los eventos pasados que tenían gastos estimados, organizados cronológicamente.',
         expanded: false
     },
     {
-        pregunta: '¿Cómo puedo exportar mis datos financieros?',
-        respuesta: 'Desde la sección de Finanzas, utiliza la opción de menú (tres puntos) y selecciona "Exportar datos". Podrás descargar tus registros en formato PDF o Excel.',
+        pregunta: '¿Cómo creo categorías personalizadas para mis eventos?',
+        respuesta: 'En el calendario, presiona el botón "+" junto a las categorías existentes. Puedes crear categorías con nombres personalizados y elegir colores para identificarlas fácilmente.',
+        expanded: false
+    },
+    {
+        pregunta: '¿El calendario tiene temas especiales?',
+        respuesta: 'Sí, el calendario cambia automáticamente su apariencia en meses especiales como febrero (San Valentín), septiembre (Independencia), octubre (Halloween) y diciembre (Navidad).',
         expanded: false
     }
 ]);
 
-const categorias = ref([
+const categorias = ref<Categoria[]>([
     {
         titulo: 'Finanzas',
         descripcion: 'Gestión de ingresos, gastos y balance',
         icon: walletOutline,
-        color: '#5B7FE8'
+        color: '#5B7FE8',
+        expanded: false,
+        ayuda: [
+            'Actualiza tu balance actual ingresando el monto en el campo correspondiente',
+            'Configura tu ingreso mensual para calcular la proyección de fin de mes',
+            'Visualiza todos los gastos planificados del mes desde tus eventos del calendario',
+            'Revisa la proyección de fin de mes para saber si terminarás con superávit o déficit',
+            'Haz clic en "Ver detalle del evento" para ver información completa de cada gasto',
+            'El gasto estimado de cada evento se suma automáticamente al total mensual',
+            'Los eventos con gastos aparecen en tarjetas de colores según su categoría',
+            'La sección lateral muestra el historial de gastos de meses anteriores'
+        ]
     },
     {
         titulo: 'Calendario',
         descripcion: 'Organización de eventos y recordatorios',
         icon: calendarOutline,
-        color: '#B67FE8'
+        color: '#B67FE8',
+        expanded: false,
+        ayuda: [
+            'Navega entre meses usando las flechas en la parte superior',
+            'Haz clic en cualquier día para ver o agregar eventos',
+            'Crea categorías personalizadas con el botón "+" junto a las categorías existentes',
+            'Asigna colores diferentes a cada categoría para identificarlas fácilmente',
+            'Edita o elimina categorías usando los iconos de lápiz y X',
+            'Añade eventos con el botón "+" en la barra lateral derecha',
+            'Cada evento puede tener: título, descripción, fecha, hora, categoría y gasto estimado',
+            'Los eventos aparecen como chips de colores en el calendario',
+            'La barra lateral muestra los eventos del día seleccionado',
+            'Edita o elimina eventos usando los iconos en cada tarjeta de evento',
+            'El calendario cambia de tema en meses especiales (febrero, septiembre, octubre, diciembre)',
+            'Usa la barra de búsqueda para filtrar eventos por título o categoría'
+        ]
     },
     {
         titulo: 'Cuenta y Perfil',
         descripcion: 'Configuración de usuario y privacidad',
         icon: personOutline,
-        color: '#E87F9B'
-    },
-    {
-        titulo: 'Configuración',
-        descripcion: 'Ajustes generales de la aplicación',
-        icon: settingsOutline,
-        color: '#7FE8CC'
+        color: '#E87F9B',
+        expanded: false,
+        ayuda: [
+            'Accede a tu perfil desde el botón redondo en la esquina superior derecha',
+            'Cambia tu foto de perfil tocando sobre la imagen actual',
+            'Recorta tu foto con la herramienta de edición antes de guardarla',
+            'Edita tu nombre y correo electrónico presionando "Editar Perfil"',
+            'Guarda los cambios o cancela la edición según necesites',
+            'Cierra sesión de forma segura con el botón "Cerrar Sesión"',
+            'Tu información se guarda automáticamente al presionar "Guardar"',
+            'La foto de perfil acepta formatos JPG y PNG con tamaño máximo de 2MB'
+        ]
     }
 ]);
 
@@ -252,8 +396,33 @@ const filteredFaqs = computed(() => {
     );
 });
 
+const isCategoryExpanded = (index: number) => {
+    return categorias.value[index]?.expanded === true;
+};
+
 const toggleFaq = (index: number) => {
     faqs.value[index].expanded = !faqs.value[index].expanded;
+};
+
+const toggleCategory = (index: number) => {
+    console.log('=== TOGGLE CATEGORY ===');
+    console.log('Index clickeado:', index);
+    console.log('Estado ANTES:', categorias.value.map((c, i) => ({ index: i, titulo: c.titulo, expanded: c.expanded })));
+    
+    const wasExpanded = categorias.value[index].expanded;
+    
+    // Primero cerramos TODAS las tarjetas
+    for (let i = 0; i < categorias.value.length; i++) {
+        categorias.value[i].expanded = false;
+    }
+    
+    // Si la tarjeta NO estaba expandida, la abrimos
+    if (!wasExpanded) {
+        categorias.value[index].expanded = true;
+    }
+    
+    console.log('Estado DESPUÉS:', categorias.value.map((c, i) => ({ index: i, titulo: c.titulo, expanded: c.expanded })));
+    console.log('=======================');
 };
 </script>
 
@@ -262,6 +431,7 @@ const toggleFaq = (index: number) => {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    padding-bottom: 80px;
 }
 
 .search-section {
@@ -333,10 +503,11 @@ const toggleFaq = (index: number) => {
 /* Categories Grid */
 .categories-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
 }
 
+/* Card Universal - Todas las categorías */
 .category-card {
     background: white;
     border-radius: 12px;
@@ -344,11 +515,17 @@ const toggleFaq = (index: number) => {
     text-align: center;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
 }
 
 .category-card:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     transform: translateY(-2px);
+}
+
+.category-expanded {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2) !important;
 }
 
 .category-icon {
@@ -369,10 +546,56 @@ const toggleFaq = (index: number) => {
     color: #2c3e50;
 }
 
-.category-card p {
+.category-description {
     margin: 0;
     color: #666;
     font-size: 0.9rem;
+}
+
+/* Ícono de expandir/contraer */
+.expand-icon {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    font-size: 24px;
+    color: #999;
+    transition: all 0.3s ease;
+}
+
+.category-expanded .expand-icon {
+    color: #5B7FE8;
+}
+
+/* Contenido expandible */
+.category-help-content {
+    text-align: left;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #f0f0f0;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.category-help-content ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.category-help-content li {
+    margin-bottom: 10px;
+    color: #555;
+    font-size: 0.85rem;
+    line-height: 1.6;
 }
 
 /* Contact Card */
@@ -446,6 +669,48 @@ const toggleFaq = (index: number) => {
     margin: 0;
 }
 
+/* Botón flotante de WhatsApp */
+.whatsapp-fab-container {
+    right: 60px;
+    bottom: 20px;
+}
+
+.whatsapp-fab {
+    --background: #25D366;
+    --background-activated: #20BA5A;
+    --background-hover: #20BA5A;
+    --box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
+    --border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    border-radius: 50% !important;
+}
+
+.whatsapp-fab ion-icon {
+    font-size: 38px;
+}
+
+.whatsapp-fab::part(native) {
+    border-radius: 50% !important;
+    overflow: hidden;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
+    }
+    50% {
+        box-shadow: 0 6px 30px rgba(37, 211, 102, 0.7);
+    }
+    100% {
+        box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
+    }
+}
+
+.whatsapp-fab:hover {
+    animation: pulse 1.5s infinite;
+}
+
 ion-footer ion-toolbar {
     text-align: center;
 }
@@ -464,6 +729,24 @@ ion-footer p {
     
     .section-title {
         font-size: 1.3rem;
+    }
+
+    .ayuda-container {
+        padding-bottom: 100px;
+    }
+
+    .whatsapp-fab-container {
+        right: 20px;
+        bottom: 20px;
+    }
+
+    .whatsapp-fab {
+        width: 65px;
+        height: 65px;
+    }
+
+    .whatsapp-fab ion-icon {
+        font-size: 34px;
     }
 }
 </style>
