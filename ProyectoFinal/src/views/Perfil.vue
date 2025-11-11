@@ -39,7 +39,6 @@
                         <ion-input type="email" v-model="editableData.email"></ion-input>
                     </ion-item>
                 </div>
-
                 <div class="button-group" v-if="isEditing">
                     <ion-button fill="outline" color="medium" @click="cancelEditing">
                         <ion-icon slot="start" :icon="close"></ion-icon>
@@ -56,13 +55,11 @@
                         Editar Perfil
                         <ion-icon slot="end" :icon="pencil"></ion-icon>
                     </ion-button>
-
                     <ion-button @click="handleLogout()" color="danger" expand="block" class="logout-button">
                         Cerrar Sesión
                         <ion-icon slot="end" :icon="logOutOutline"></ion-icon>
                     </ion-button>
                 </div>
-
             </div>
         </ion-content>
         <ion-modal :is-open="showCropperModal" @didDismiss="closeCropperModal">
@@ -76,7 +73,6 @@
                     </ion-buttons>
                 </ion-toolbar>
             </ion-header>
-
             <ion-content class="ion-padding">
                 <div class="cropper-container" v-if="selectedImage">
                     <cropper ref="cropperRef" :src="selectedImage" :stencil-props="{
@@ -100,7 +96,6 @@
         </ion-footer>
     </ion-page>
 </template>
-
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
@@ -118,16 +113,13 @@ const editableData = ref({
     nombre: '',
     email: ''
 });
-
 const showCropperModal = ref(false);
 const selectedImage = ref<string | null>(null);
 const cropperRef = ref<any>(null);
-
 const API_URL = 'http://127.0.0.1:8000/api';
 onMounted(() => {
     loadUserData();
 });
-
 const loadUserData = () => {
     const userDataString = localStorage.getItem('user_data');
     if (userDataString) {
@@ -136,32 +128,26 @@ const loadUserData = () => {
         handleLogout(false);
     }
 };
-
 const startEditing = () => {
     editableData.value.nombre = user.value.nombre;
     editableData.value.email = user.value.email;
     isEditing.value = true;
 };
-
 const cancelEditing = () => {
     isEditing.value = false;
 };
-
 const handleUpdateProfile = async () => {
     if (!editableData.value.nombre || !editableData.value.email) {
         presentToast('Nombre y correo no pueden estar vacíos', 'danger');
         return;
     }
-
     const loading = await loadingController.create({ message: 'Guardando...' });
     await loading.present();
-
     try {
         const token = localStorage.getItem('auth_token');
         const response = await axios.put(`${API_URL}/perfil`, editableData.value, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-
         if (response.status === 200) {
             user.value = response.data;
             localStorage.setItem('user_data', JSON.stringify(response.data));
@@ -198,7 +184,6 @@ const onFileChange = (event: Event) => {
     }
     target.value = '';
 };
-
 const handleCrop = () => {
     if (!cropperRef.value) return;
     const { canvas } = cropperRef.value.getResult();
@@ -214,37 +199,31 @@ const handleCrop = () => {
         }, 'image/jpeg');
     }
 };
-
 const closeCropperModal = () => {
     showCropperModal.value = false;
     selectedImage.value = null;
 };
-
 const uploadPhoto = async (file: File) => {
     const loading = await loadingController.create({ message: 'Subiendo foto...' });
     await loading.present();
 
     const formData = new FormData();
     formData.append('foto', file);
-
     try {
         const token = localStorage.getItem('auth_token');
         if (!token) {
             presentToast('Error de autenticación', 'danger');
             return;
         }
-
         const response = await axios.post(`${API_URL}/perfil/foto`, formData, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'multipart/form-data',
             }
         });
-
         user.value = response.data;
         localStorage.setItem('user_data', JSON.stringify(response.data));
         presentToast('Foto de perfil actualizada', 'success');
-
     } catch (error: any) {
         console.error('Error al subir la foto:', error);
         let msg = 'No se pudo subir la foto.';
@@ -256,16 +235,13 @@ const uploadPhoto = async (file: File) => {
         await loading.dismiss();
     }
 };
-
 const handleLogout = async (showLoading = true) => {
     let loading;
     if (showLoading) {
         loading = await loadingController.create({ message: 'Cerrando sesión...' });
         await loading.present();
     }
-
     const token = localStorage.getItem('auth_token');
-
     try {
         if (token) {
             await axios.post(`${API_URL}/logout`, {}, {
@@ -282,11 +258,9 @@ const handleLogout = async (showLoading = true) => {
         if (loading) {
             await loading.dismiss();
         }
-
         router.replace('/login');
     }
 };
-
 const presentToast = async (message: string, color: 'success' | 'danger') => {
     const toast = await toastController.create({
         message: message,

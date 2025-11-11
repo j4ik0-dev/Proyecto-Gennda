@@ -2,15 +2,11 @@
     <ion-page>
         <ion-header>
         </ion-header>
-
         <ion-content :fullscreen="true" class="ion-padding">
-
             <div class="profile-card">
-
                 <div class="logo-container">
                     <img class="logo" src="/logo2.png" alt="logo" />
                 </div>
-
                 <div class="user-info-container">
                     <ion-item class="info-field-editable">
                         <ion-label position="stacked">Correo</ion-label>
@@ -21,22 +17,18 @@
                         <ion-input type="password" v-model="formData.password"></ion-input>
                     </ion-item>
                 </div>
-
                 <div class="button-stack">
                     <ion-button @click="handleLogin" color="primary" expand="block">
                         Iniciar Sesión
                         <ion-icon slot="end" :icon="logInOutline"></ion-icon>
                     </ion-button>
                 </div>
-                
                 <p class="register-text">
                     ¿No tienes cuenta?
                     <router-link to="/registro">Regístrate</router-link>
                 </p>
-
             </div>
         </ion-content>
-
         <ion-footer>
             <ion-toolbar>
                 <p>© 2025 Gennda - Todos los derechos reservados</p>
@@ -44,7 +36,6 @@
         </ion-footer>
     </ion-page>
 </template>
-
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -56,11 +47,8 @@ const formData = ref({
     email: '',
     password: ''
 });
-
 const router = useRouter();
-
 const API_URL = 'http://127.0.0.1:8000/api';
-
 const presentToast = async (message: string, color: 'success' | 'danger') => {
     const toast = await toastController.create({
         message: message,
@@ -70,28 +58,23 @@ const presentToast = async (message: string, color: 'success' | 'danger') => {
     });
     await toast.present();
 };
-
 const handleLogin = async () => {
     if (!formData.value.email || !formData.value.password) {
         presentToast('Por favor, ingresa correo y contraseña', 'danger');
         return;
     }
-
     try {
         const response = await axios.post(`${API_URL}/login`, formData.value);
         if (response.status === 200 && response.data.access_token) {
             console.log('Login exitoso:', response.data);
-
             localStorage.setItem('auth_token', response.data.access_token);
             localStorage.setItem('user_data', JSON.stringify(response.data.user));
             axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`;
-
             presentToast(`¡Bienvenido, ${response.data.user.nombre}!`, 'success');
             router.push('/calendario');
         }
     } catch (error: any) {
         console.error('Error en el login:', error);
-
         if (error.response && (error.response.status === 401 || error.response.status === 422)) {
             presentToast('Correo o contraseña incorrectos.', 'danger');
         } else {

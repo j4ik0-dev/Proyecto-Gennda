@@ -3,7 +3,7 @@
     <ion-header>
       <ion-toolbar>
         <ion-title>Gennda</ion-title>
-        <!-- BOTÓN DE LOGIN CON ICONO --><ion-button id="boton-sesion" slot="end" @click="$router.push('/login')">
+        <ion-button id="boton-sesion" slot="end" @click="$router.push('/login')">
           Iniciar Sesion
           <ion-icon slot="end" :icon="logInOutline"></ion-icon>
         </ion-button>
@@ -13,13 +13,13 @@
       <div class="inicio-container">
         <div class="subcontainer">
           <div class="central-box">
-            <!-- Corregido: 'cass' por 'class' --><div class="sub-logo">
+            <div class="sub-logo">
               <img class="logo-inicio" src="/logo.png" alt="logo"></img>
             </div>
             <h1>Bienvenido a Gennda</h1>
             <p>La mejor solución para tu organizacion</p>
             <router-link to="/registro">
-              <!-- BOTÓN DE REGISTRO CON ICONO --><ion-button id="boton-registro" size="default">
+              <ion-button id="boton-registro" size="default">
                 <ion-icon slot="start" :icon="personAddOutline"></ion-icon>
                 Registrase
               </ion-button>
@@ -37,9 +37,8 @@
 </template>
 
 <script setup lang="ts">
-// Importar 'IonIcon' y los iconos necesarios
 import { IonButtons,IonPage, IonButton, IonFooter, IonContent, IonHeader, IonToolbar, IonMenuButton, IonTitle, IonIcon } from '@ionic/vue';
-import { logInOutline, personAddOutline } from 'ionicons/icons'; // <-- Importación de los iconos
+import { logInOutline, personAddOutline } from 'ionicons/icons';
 </script>
 
 <style scoped>
@@ -101,7 +100,6 @@ ion-title{
   margin-right: 10px;
 }
 
-/* Estilos para que los iconos se vean bien (margen) */
 #boton-sesion ion-icon {
   margin-left: 6px;
 }

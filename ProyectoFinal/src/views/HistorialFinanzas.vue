@@ -62,16 +62,16 @@ interface HistorialItem {
 const historial = ref<HistorialItem[]>([
   {
     fecha: '2025-09-30',
-    usuario: 'Ana López',
-    detalle: 'Pago recibido',
+    usuario: 'Jefferson',
+    detalle: 'Pago Realizado',
     descripción: 'Pago vía tarjeta de crédito',
     color: '#4CAF50'
   },
   {
     fecha: '2025-09-29',
-    usuario: 'Carlos Mendoza',
-    detalle: 'Solicitud procesada',
-    descripción: 'Documento verificado',
+    usuario: 'Jefferson',
+    detalle: 'Pago Realizado',
+    descripción: 'Mensualidad de suscripción cobrada spotify',
     color: '#2196F3'
   }
 ])
