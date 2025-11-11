@@ -157,6 +157,8 @@ const formData = ref({
 });
 const router = useRouter();
 
+
+const API_URL = 'http://127.0.0.1:8000/api'; 
 >>>>>>> 5c57276 (se termino la vista finanzas)
 const API_URL = 'http://127.0.0.1:8000/api'; 
 const presentToast = async (message: string, color: 'success' | 'danger') => {
