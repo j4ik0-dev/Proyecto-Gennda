@@ -176,7 +176,7 @@ const formData = ref({
 });
 
 const router = useRouter();
-// Asegúrate de que esta URL sea la correcta (la de tu VM o túnel)
+
 const API_URL = 'http://127.0.0.1:8000/api'; 
 
 const presentToast = async (message: string, color: 'success' | 'danger') => {

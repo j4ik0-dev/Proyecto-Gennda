@@ -21,6 +21,7 @@ class Usuarios extends Authenticatable
         'password',
         'foto_path',
         'balance_actual',
+        'ingreso_mensual',
     ];
     /**
      * The attributes that should be hidden for serialization.

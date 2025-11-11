@@ -138,8 +138,8 @@ class UsuariosController extends Controller
                 Rule::unique('usuarios')->ignore($user->id),
             ],
             
-            'balance_actual' => 'sometimes|nullable|numeric|min:0'
-        ]);
+            'balance_actual' => 'sometimes|nullable|numeric|min:0',
+            'ingreso_mensual' => 'sometimes|nullable|numeric|min:0'        ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
@@ -147,5 +147,7 @@ class UsuariosController extends Controller
         $user->update($validator->validated());
         return response()->json($user);
     }
+
+    
 
 }

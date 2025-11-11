@@ -37,4 +37,3 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
-// (Nota: El '}' extra que estaba aquí ha sido eliminado)

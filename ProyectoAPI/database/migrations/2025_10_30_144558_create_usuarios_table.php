@@ -17,8 +17,9 @@ return new class extends Migration
         Schema::create('usuarios', function (Blueprint $table) { 
             $table->id();
             $table->string('nombre');
-            $table->string('dui', 10)->unique(); // El nuevo campo DUI
+            $table->string('dui', 10)->unique(); 
             $table->string('email')->unique();
+            $table->decimal('ingreso_mensual', 10, 2)->nullable()->default(0.00);
             $table->string('password');
             $table->timestamps();
         });
