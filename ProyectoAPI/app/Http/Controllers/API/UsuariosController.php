@@ -137,7 +137,6 @@ class UsuariosController extends Controller
                 'max:255',
                 Rule::unique('usuarios')->ignore($user->id),
             ],
-            
             'balance_actual' => 'sometimes|nullable|numeric|min:0',
             'ingreso_mensual' => 'sometimes|nullable|numeric|min:0'        ]);
 
