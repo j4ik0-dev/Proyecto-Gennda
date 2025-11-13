@@ -17,7 +17,7 @@ class Usuarios extends Authenticatable
     protected $fillable = [
         'nombre',
         'email',
-        'dui', // <-- ¡CAMBIO AÑADIDO AQUÍ!
+        'dui',
         'password',
         'foto_path',
         'balance_actual',

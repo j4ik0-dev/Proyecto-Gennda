@@ -15,17 +15,13 @@ class UsuariosController extends Controller
         $validator = Validator::make($request->all(), [
             'nombre' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:usuarios',
-            
-            // --- CAMBIO AQUÍ: VALIDACIÓN DE DUI AÑADIDA ---
             'dui' => [
                 'required',
                 'string',
                 'max:10',
                 'unique:usuarios',
-                'regex:/^[0-9]{8}-[0-9]{1}$/' // Valida el formato 00000000-0
+                'regex:/^[0-9]{8}-[0-9]{1}$/'
             ],
-            // --- FIN DEL CAMBIO ---
-
             'password' => 'required|string|min:8|confirmed',
         ]);
 
@@ -36,7 +32,7 @@ class UsuariosController extends Controller
         $usuario = Usuarios::create([
             'nombre' => $request->nombre,
             'email' => $request->email,
-            'dui' => $request->dui, // <-- CAMBIO AQUÍ: DUI AÑADIDO
+            'dui' => $request->dui,
             'password' => Hash::make($request->password),
         ]);
 
@@ -106,7 +102,7 @@ class UsuariosController extends Controller
     public function updatePhoto(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Límite de 2MB
+            'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -128,7 +124,7 @@ class UsuariosController extends Controller
     {
         $user = $request->user();
         $validator = Validator::make($request->all(), [
-            'nombre' => 'sometimes|required|string|max:255', // actualizaciones parciales
+            'nombre' => 'sometimes|required|string|max:255',
             'email' => [
                 'sometimes', 
                 'required',
@@ -138,7 +134,8 @@ class UsuariosController extends Controller
                 Rule::unique('usuarios')->ignore($user->id),
             ],
             'balance_actual' => 'sometimes|nullable|numeric|min:0',
-            'ingreso_mensual' => 'sometimes|nullable|numeric|min:0'        ]);
+            'ingreso_mensual' => 'sometimes|nullable|numeric|min:0'        
+        ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);

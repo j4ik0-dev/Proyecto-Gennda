@@ -12,7 +12,7 @@
                     <h2>Página no encontrada</h2>
                     <p>La ruta que intentas visitar no existe o ha sido movida.</p>
                     <p class="timer-text" v-if="countdown > 0">
-                        Serás redirigido al inicio en {{ countdown }} segundos...
+                        Serás redirigido al inicio en {{ countdown }} segundos
                     </p>
                     <ion-button @click="goHome" expand="block" class="home-button">
                         Volver al Inicio

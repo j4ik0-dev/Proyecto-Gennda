@@ -190,7 +190,6 @@ const confirmRegister = async () => {
 const openTermsModal = () => {
     showTerms.value = true;
 };
-
 const closeTerms = () => {
     showTerms.value = false;
 };

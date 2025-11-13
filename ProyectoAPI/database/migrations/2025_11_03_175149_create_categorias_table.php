@@ -11,12 +11,12 @@ return new class extends Migration
         Schema::create('categorias', function (Blueprint $table) {
             $table->id();
             $table->foreignId('usuario_id')
-                  ->constrained('usuarios') // Se enlaza a la tabla 'usuarios'
-                  ->onDelete('cascade');     // Si se borra el usuario, se borran sus categorías
-            
+                ->constrained('usuarios')
+                ->onDelete('cascade');
+
             $table->string('nombre');
-            $table->string('color'); // Ej. #C4B5FD
-            $table->timestamps(); // Crea created_at y updated_at
+            $table->string('color');
+            $table->timestamps();
         });
     }
 
