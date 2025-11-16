@@ -160,7 +160,6 @@
                     </div>
                 </div>
 
-                <!-- Recursos adicionales -->
                 <div class="section-container">
                     <h2 class="section-title">Recursos Adicionales</h2>
                     <div class="resources-list">
@@ -411,12 +410,10 @@ const toggleCategory = (index: number) => {
     
     const wasExpanded = categorias.value[index].expanded;
     
-    // Primero cerramos TODAS las tarjetas
     for (let i = 0; i < categorias.value.length; i++) {
         categorias.value[i].expanded = false;
     }
     
-    // Si la tarjeta NO estaba expandida, la abrimos
     if (!wasExpanded) {
         categorias.value[index].expanded = true;
     }
@@ -500,14 +497,12 @@ const toggleCategory = (index: number) => {
     line-height: 1.6;
 }
 
-/* Categories Grid */
 .categories-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
 }
 
-/* Card Universal - Todas las categorías */
 .category-card {
     background: white;
     border-radius: 12px;
@@ -566,7 +561,6 @@ const toggleCategory = (index: number) => {
     color: #5B7FE8;
 }
 
-/* Contenido expandible */
 .category-help-content {
     text-align: left;
     margin-top: 20px;
@@ -598,7 +592,6 @@ const toggleCategory = (index: number) => {
     line-height: 1.6;
 }
 
-/* Contact Card */
 .contact-card {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-radius: 12px;
@@ -721,7 +714,6 @@ ion-footer p {
     color: #666;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     .categories-grid {
         grid-template-columns: 1fr;
@@ -750,3 +742,4 @@ ion-footer p {
     }
 }
 </style>
+
