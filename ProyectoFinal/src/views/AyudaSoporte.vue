@@ -10,7 +10,6 @@
         </ion-header>
         <ion-content class="ion-padding">
             <div class="ayuda-container">
-                <!-- Sección de búsqueda -->
                 <div class="search-section">
                     <ion-searchbar 
                         v-model="searchQuery"
@@ -19,7 +18,6 @@
                     ></ion-searchbar>
                 </div>
 
-                <!-- Preguntas Frecuentes -->
                 <div class="section-container">
                     <h2 class="section-title">Preguntas Frecuentes</h2>
                     <div class="faq-grid">
@@ -43,11 +41,9 @@
                     </div>
                 </div>
 
-                <!-- Categorías de Ayuda -->
                 <div class="section-container">
                     <h2 class="section-title">Categorías de Ayuda</h2>
                     <div class="categories-grid">
-                        <!-- Card Finanzas -->
                         <div 
                             class="category-card"
                             :class="{ 'category-expanded': isCategoryExpanded(0) }"
@@ -73,7 +69,6 @@
                             </div>
                         </div>
 
-                        <!-- Card Calendario -->
                         <div 
                             class="category-card"
                             :class="{ 'category-expanded': isCategoryExpanded(1) }"
@@ -99,7 +94,6 @@
                             </div>
                         </div>
 
-                        <!-- Card Perfil -->
                         <div 
                             class="category-card"
                             :class="{ 'category-expanded': isCategoryExpanded(2) }"
@@ -127,7 +121,6 @@
                     </div>
                 </div>
 
-                <!-- Contacto y Soporte -->
                 <div class="section-container">
                     <h2 class="section-title">Contacta con Nosotros</h2>
                     <div class="contact-card">
@@ -180,7 +173,6 @@
                 </div>
             </div>
 
-            <!-- Botón flotante de WhatsApp -->
             <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="whatsapp-fab-container">
                 <ion-fab-button 
                     :href="getWhatsAppUrl()"
@@ -251,7 +243,6 @@ interface Categoria {
     ayuda: string[];
 }
 
-// --- Configuración de WhatsApp ---
 const numeroWhatsApp = '50374677407';
 const mensajePredeterminado = 'Hola, estoy en la aplicación Gennda y necesito ayuda con soporte.';
 
@@ -446,7 +437,6 @@ const toggleCategory = (index: number) => {
     color: #2c3e50;
 }
 
-/* FAQ Cards */
 .faq-grid {
     display: flex;
     flex-direction: column;
@@ -547,7 +537,6 @@ const toggleCategory = (index: number) => {
     font-size: 0.9rem;
 }
 
-/* Ícono de expandir/contraer */
 .expand-icon {
     position: absolute;
     top: 25px;
@@ -635,7 +624,6 @@ const toggleCategory = (index: number) => {
     margin-top: 10px;
 }
 
-/* Resources List */
 .resources-list {
     background: white;
     border-radius: 12px;
@@ -662,7 +650,6 @@ const toggleCategory = (index: number) => {
     margin: 0;
 }
 
-/* Botón flotante de WhatsApp */
 .whatsapp-fab-container {
     right: 60px;
     bottom: 20px;
